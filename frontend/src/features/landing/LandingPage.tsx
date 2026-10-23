@@ -6,8 +6,6 @@ import {
   CheckCircle2,
   AlertTriangle,
   ArrowRight,
-  Sparkles,
-  FileSpreadsheet,
 } from 'lucide-react';
 import { Button } from '../../components/ui/Button';
 
@@ -18,29 +16,19 @@ export function LandingPage() {
   return (
     <div className="min-h-screen bg-slate-50 text-slate-900 flex flex-col justify-between selection:bg-blue-100 selection:text-blue-900">
       {/* Top Navbar */}
-      <header className="sticky top-0 z-40 border-b border-slate-200/80 bg-white/95 backdrop-blur-xs">
-        <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
-          <Link to="/" className="flex items-center gap-2.5">
-            <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-blue-600 text-white shadow-xs">
-              <Scale className="w-5 h-5 text-white" />
-            </div>
-            <div className="flex flex-col">
-              <span className="text-base font-bold text-slate-900 tracking-tight flex items-center gap-1.5">
-                ClauseLens
-                <span className="text-[10px] font-semibold uppercase tracking-wider bg-blue-50 text-blue-700 border border-blue-200 px-1.5 py-0.2 rounded-sm">
-                  Beta
-                </span>
-              </span>
-              <span className="text-[11px] text-slate-500 font-medium hidden sm:block">
-                Contract Risk Intelligence
-              </span>
-            </div>
+      <header className="sticky top-0 z-40 border-b border-slate-200 bg-white/95 backdrop-blur-xs">
+        <div className="mx-auto flex h-14 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
+          <Link to="/" className="flex items-center gap-2">
+            <Scale className="w-5 h-5 text-blue-600" />
+            <span className="text-base font-semibold text-slate-900 tracking-tight">
+              ClauseLens
+            </span>
           </Link>
 
-          <nav className="flex items-center gap-3 sm:gap-4">
+          <nav className="flex items-center gap-3">
             <Link
               to="/login"
-              className="text-xs font-semibold text-slate-600 hover:text-slate-900 transition-colors px-2 py-1"
+              className="text-xs font-medium text-slate-600 hover:text-slate-900 transition-colors px-2 py-1"
             >
               Sign In
             </Link>
@@ -56,7 +44,7 @@ export function LandingPage() {
               variant="primary"
               size="sm"
               onClick={() => navigate('/contracts/new')}
-              className="text-xs font-semibold"
+              className="text-xs font-medium"
             >
               Analyze a Contract
             </Button>
@@ -66,87 +54,86 @@ export function LandingPage() {
 
       {/* Hero Section */}
       <main className="flex-1">
-        <section className="relative overflow-hidden pt-16 pb-20 sm:pt-24 sm:pb-28">
+        <section className="relative overflow-hidden pt-14 pb-16 sm:pt-20 sm:pb-24">
           <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 text-center">
-            {/* Tagline Badge */}
-            <div className="inline-flex items-center gap-2 rounded-full border border-blue-200 bg-blue-50/80 px-3.5 py-1 text-xs font-semibold text-blue-700 mb-6 shadow-2xs">
-              <Sparkles className="w-3.5 h-3.5 text-blue-600" />
-              <span>Evidence-Backed Contract Risk Flagger for Freelancers & SMBs</span>
+            {/* Tagline */}
+            <div className="inline-flex items-center gap-1.5 rounded border border-slate-200 bg-white px-2.5 py-1 text-xs font-medium text-slate-600 mb-6">
+              <span>Contract Risk Review & Clause Verification</span>
             </div>
 
             {/* Main Headline */}
-            <h1 className="text-3xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-slate-900 max-w-4xl mx-auto leading-tight">
-              Review contract terms <br className="hidden sm:inline" />
-              against <span className="text-blue-600">your business rules</span>.
+            <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight text-slate-900 max-w-3xl mx-auto leading-tight">
+              Review contract terms against <span className="text-blue-600">your business rules</span>
             </h1>
 
             {/* Subtitle */}
-            <p className="mt-5 max-w-2xl mx-auto text-sm sm:text-base text-slate-600 leading-relaxed">
-              Don’t get locked into Net-90 payment terms, automatic multi-year renewals, or uncapped indemnities. ClauseLens flags risky terms with exact page citations and verified quotes.
+            <p className="mt-4 max-w-2xl mx-auto text-sm text-slate-600 leading-relaxed">
+              Identify non-standard payment windows, automatic renewal traps, and uncapped indemnities before signing. Every finding includes the exact contract quotation and page reference.
             </p>
 
-            {/* Primary & Secondary CTAs */}
+            {/* Actions */}
             <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
               <Button
                 variant="primary"
-                size="lg"
+                size="md"
                 onClick={() => navigate('/contracts/new')}
                 rightIcon={<ArrowRight className="w-4 h-4" />}
-                className="font-bold shadow-md shadow-blue-500/10"
+                className="font-medium"
               >
                 Analyze a Contract
               </Button>
               <Button
                 variant="outline"
-                size="lg"
+                size="md"
                 onClick={() => navigate('/analyses/anl_apex_001')}
-                className="bg-white hover:bg-slate-50 font-semibold"
+                className="bg-white font-medium"
               >
                 View Sample Analysis (Apex MSA)
               </Button>
             </div>
 
-            {/* Micro Trust Indicators */}
-            <div className="mt-10 flex flex-wrap items-center justify-center gap-6 text-xs text-slate-500">
-              <span className="flex items-center gap-1.5 font-medium">
-                <CheckCircle2 className="w-4 h-4 text-emerald-600" />
-                Exact PDF Source Quotations
+            {/* Trust Indicators */}
+            <div className="mt-8 flex flex-wrap items-center justify-center gap-6 text-xs text-slate-500">
+              <span className="flex items-center gap-1.5">
+                <CheckCircle2 className="w-3.5 h-3.5 text-slate-400" />
+                Exact PDF source quotations
               </span>
-              <span className="flex items-center gap-1.5 font-medium">
-                <CheckCircle2 className="w-4 h-4 text-emerald-600" />
-                Custom Net-30 & Liability Rules
+              <span className="flex items-center gap-1.5">
+                <CheckCircle2 className="w-3.5 h-3.5 text-slate-400" />
+                Custom policy comparisons
               </span>
-              <span className="flex items-center gap-1.5 font-medium">
-                <CheckCircle2 className="w-4 h-4 text-emerald-600" />
-                Verified Statutory Alignment
+              <span className="flex items-center gap-1.5">
+                <CheckCircle2 className="w-3.5 h-3.5 text-slate-400" />
+                Statutory rule checks
               </span>
             </div>
 
-            {/* Interactive Evidence Preview Card */}
-            <div className="mt-16 mx-auto max-w-4xl rounded-2xl border border-slate-200 bg-white p-6 shadow-xl text-left">
-              <div className="flex items-center justify-between pb-4 border-b border-slate-100 flex-wrap gap-2">
+            {/* Evidence Preview */}
+            <div className="mt-12 mx-auto max-w-3xl rounded-lg border border-slate-200 bg-white p-5 text-left">
+              <div className="flex items-center justify-between pb-3 border-b border-slate-100 flex-wrap gap-2">
                 <div className="flex items-center gap-2">
-                  <span className="flex h-2.5 w-2.5 rounded-full bg-red-500" />
-                  <span className="text-xs font-bold text-slate-900">
-                    High Risk Detected: Asymmetric Payment Terms
+                  <span className="w-1.5 h-1.5 rounded-full bg-red-600" />
+                  <span className="text-xs font-semibold text-slate-900">
+                    High Risk: Asymmetric Payment Terms
                   </span>
+                  <span className="text-slate-400 text-xs">·</span>
+                  <span className="text-xs text-slate-500">Payment Terms</span>
                 </div>
-                <span className="inline-flex items-center gap-1 font-mono text-[11px] text-slate-600 bg-slate-100 px-2 py-0.5 rounded">
-                  <FileSpreadsheet className="w-3 h-3 text-slate-400" />
+                <span className="font-mono text-xs text-slate-500">
                   Page 2, Section 4.2
                 </span>
               </div>
 
-              <div className="mt-4 rounded-xl border border-red-200 bg-red-50/40 p-4 font-mono text-xs text-slate-800 leading-relaxed border-l-4 border-l-red-600">
+              <div className="mt-3.5 pl-3 border-l-2 border-slate-300 font-serif text-xs text-slate-800 leading-relaxed italic bg-slate-50/50 py-2 rounded-r">
                 "Client shall remit payment for undisputed invoices within ninety (90) calendar days from receipt of Client’s internal executive steering committee approval."
               </div>
 
-              <div className="mt-3 flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs text-slate-600">
-                <span className="text-emerald-700 font-semibold flex items-center gap-1">
+              <div className="mt-3 flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs text-slate-500">
+                <span className="flex items-center gap-1 text-slate-600">
                   <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
                   Source verified against Apex_Enterprises_MSA.pdf
                 </span>
-                <span className="font-semibold text-blue-600">
+                <span className="text-slate-600">
                   Breaches User Policy: Maximum Net-30 Window
                 </span>
               </div>
@@ -154,107 +141,98 @@ export function LandingPage() {
           </div>
         </section>
 
-        {/* 3-Step Explanation Section */}
-        <section className="border-t border-slate-200 bg-white py-16 sm:py-24">
+        {/* 3-Step Process */}
+        <section className="border-t border-slate-200 bg-white py-14 sm:py-16">
           <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-            <div className="text-center max-w-3xl mx-auto mb-12">
-              <h2 className="text-2xl sm:text-3xl font-bold tracking-tight text-slate-900">
-                How ClauseLens Protects Your Work
+            <div className="text-center max-w-2xl mx-auto mb-10">
+              <h2 className="text-xl sm:text-2xl font-bold tracking-tight text-slate-900">
+                How ClauseLens Evaluates Contracts
               </h2>
-              <p className="mt-2 text-sm text-slate-500">
-                A simple three-step verification workflow designed for non-lawyers.
+              <p className="mt-1.5 text-xs sm:text-sm text-slate-500">
+                A structured, evidence-backed workflow for contract review.
               </p>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-              {/* Step 1 */}
-              <div className="rounded-2xl border border-slate-200 bg-slate-50/50 p-6 space-y-3">
-                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-blue-600 text-white font-bold text-sm">
-                  1
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <div className="rounded-lg border border-slate-200 bg-white p-5 space-y-2">
+                <div className="text-xs font-mono font-medium text-slate-400">
+                  01
                 </div>
-                <h3 className="text-base font-bold text-slate-900">
+                <h3 className="text-sm font-semibold text-slate-900">
                   Upload Contract PDF
                 </h3>
-                <p className="text-xs text-slate-600 leading-relaxed">
-                  Drop your contract into the browser. The system validates file integrity via SHA-256 and extracts clean text without sending private files to open web scrapers.
+                <p className="text-xs text-slate-500 leading-relaxed">
+                  Extracts clean text and computes SHA-256 integrity checksums directly in your browser.
                 </p>
               </div>
 
-              {/* Step 2 */}
-              <div className="rounded-2xl border border-slate-200 bg-slate-50/50 p-6 space-y-3">
-                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-blue-600 text-white font-bold text-sm">
-                  2
+              <div className="rounded-lg border border-slate-200 bg-white p-5 space-y-2">
+                <div className="text-xs font-mono font-medium text-slate-400">
+                  02
                 </div>
-                <h3 className="text-base font-bold text-slate-900">
-                  Compare Rules & Policies
+                <h3 className="text-sm font-semibold text-slate-900">
+                  Compare Policies & Rules
                 </h3>
-                <p className="text-xs text-slate-600 leading-relaxed">
-                  Evaluate clauses against verified regulatory rules (like the UK Late Payment Act) alongside your own business rules regarding payment terms and liability caps.
+                <p className="text-xs text-slate-500 leading-relaxed">
+                  Evaluates extracted clauses against statutory regulations and your custom business policies.
                 </p>
               </div>
 
-              {/* Step 3 */}
-              <div className="rounded-2xl border border-slate-200 bg-slate-50/50 p-6 space-y-3">
-                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-blue-600 text-white font-bold text-sm">
-                  3
+              <div className="rounded-lg border border-slate-200 bg-white p-5 space-y-2">
+                <div className="text-xs font-mono font-medium text-slate-400">
+                  03
                 </div>
-                <h3 className="text-base font-bold text-slate-900">
-                  Review Verifiable Evidence
+                <h3 className="text-sm font-semibold text-slate-900">
+                  Inspect Verifiable Evidence
                 </h3>
-                <p className="text-xs text-slate-600 leading-relaxed">
-                  Never guess if an AI hallucinated. Every flagged term includes the exact quote, page number, plain-English risk explanation, and suggested counter-proposals.
+                <p className="text-xs text-slate-500 leading-relaxed">
+                  Review findings with exact page numbers, verified quotes, risk rationale, and suggested counter-proposals.
                 </p>
               </div>
             </div>
           </div>
         </section>
 
-        {/* Feature Highlights Grid */}
-        <section className="py-16 sm:py-24 bg-slate-50">
+        {/* Focus Areas */}
+        <section className="py-14 sm:py-16 bg-slate-50 border-t border-slate-200">
           <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-            <div className="text-center max-w-2xl mx-auto mb-12">
-              <h2 className="text-2xl sm:text-3xl font-bold tracking-tight text-slate-900">
-                Built for Independent Professionals
+            <div className="text-center max-w-2xl mx-auto mb-10">
+              <h2 className="text-xl sm:text-2xl font-bold tracking-tight text-slate-900">
+                Key Risk Focus Areas
               </h2>
-              <p className="mt-2 text-sm text-slate-500">
-                Key capabilities designed to level the playing field against enterprise legal boilerplate.
+              <p className="mt-1.5 text-xs sm:text-sm text-slate-500">
+                Core clause types evaluated across enterprise agreements.
               </p>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-              <div className="rounded-xl border border-slate-200 bg-white p-6 space-y-2.5 shadow-2xs">
-                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-blue-50 text-blue-600 mb-2">
-                  <FileSearch className="w-5 h-5" />
-                </div>
-                <h4 className="text-sm font-bold text-slate-900">
-                  Asymmetric Payment Detection
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+              <div className="rounded-lg border border-slate-200 bg-white p-5 space-y-2">
+                <FileSearch className="w-4 h-4 text-slate-500" />
+                <h4 className="text-sm font-semibold text-slate-900">
+                  Asymmetric Payment Terms
                 </h4>
-                <p className="text-xs text-slate-600 leading-relaxed">
-                  Instantly flags Net-60, Net-90, and pay-when-paid conditions that put your small business cash flow at risk.
+                <p className="text-xs text-slate-500 leading-relaxed">
+                  Detects Net-60, Net-90, and pay-when-paid conditions that delay payment receipt.
                 </p>
               </div>
 
-              <div className="rounded-xl border border-slate-200 bg-white p-6 space-y-2.5 shadow-2xs">
-                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-amber-50 text-amber-600 mb-2">
-                  <AlertTriangle className="w-5 h-5" />
-                </div>
-                <h4 className="text-sm font-bold text-slate-900">
+              <div className="rounded-lg border border-slate-200 bg-white p-5 space-y-2">
+                <AlertTriangle className="w-4 h-4 text-slate-500" />
+                <h4 className="text-sm font-semibold text-slate-900">
                   Automatic Renewal Traps
                 </h4>
-                <p className="text-xs text-slate-600 leading-relaxed">
-                  Uncovers hidden 90-day cancellation notice periods that bind you to extended annual service commitments.
+                <p className="text-xs text-slate-500 leading-relaxed">
+                  Identifies extended notice windows and auto-renewal clauses requiring advance termination notice.
                 </p>
               </div>
 
-              <div className="rounded-xl border border-slate-200 bg-white p-6 space-y-2.5 shadow-2xs">
-                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-purple-50 text-purple-600 mb-2">
-                  <ShieldCheck className="w-5 h-5" />
-                </div>
-                <h4 className="text-sm font-bold text-slate-900">
-                  Uncapped Liability Warnings
+              <div className="rounded-lg border border-slate-200 bg-white p-5 space-y-2">
+                <ShieldCheck className="w-4 h-4 text-slate-500" />
+                <h4 className="text-sm font-semibold text-slate-900">
+                  Uncapped Liability & Indemnity
                 </h4>
-                <p className="text-xs text-slate-600 leading-relaxed">
-                  Highlights indemnity clauses where your personal or company liability is not capped at the contract fees collected.
+                <p className="text-xs text-slate-500 leading-relaxed">
+                  Highlights broad indemnities and uncapped damage provisions that exceed total contract value.
                 </p>
               </div>
             </div>
@@ -263,33 +241,33 @@ export function LandingPage() {
       </main>
 
       {/* Footer */}
-      <footer className="border-t border-slate-200 bg-white py-10">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 space-y-6">
+      <footer className="border-t border-slate-200 bg-white py-8">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 space-y-4">
           <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
             <div className="flex items-center gap-2">
-              <Scale className="w-5 h-5 text-blue-600" />
-              <span className="font-bold text-slate-900 text-sm">ClauseLens</span>
+              <Scale className="w-4 h-4 text-slate-600" />
+              <span className="font-semibold text-slate-900 text-xs">ClauseLens</span>
               <span className="text-xs text-slate-400">© 2026</span>
             </div>
 
-            <div className="flex items-center gap-4 text-xs font-semibold text-slate-600">
-              <Link to="/dashboard" className="hover:text-blue-600">
+            <div className="flex items-center gap-4 text-xs text-slate-600">
+              <Link to="/dashboard" className="hover:text-slate-900">
                 Dashboard
               </Link>
-              <Link to="/policies" className="hover:text-blue-600">
+              <Link to="/policies" className="hover:text-slate-900">
                 Policies
               </Link>
-              <Link to="/regulatory-rules" className="hover:text-blue-600">
+              <Link to="/regulatory-rules" className="hover:text-slate-900">
                 Rule Library
               </Link>
-              <Link to="/settings" className="hover:text-blue-600">
-                Privacy
+              <Link to="/settings" className="hover:text-slate-900">
+                Settings
               </Link>
             </div>
           </div>
 
-          <p className="text-center text-xs text-slate-400 max-w-3xl mx-auto leading-relaxed">
-            Legal Disclaimer: ClauseLens is an AI-powered contract analysis assistance tool and does not provide legal representation or binding legal opinions. Unflagged terms are not guaranteed to be legally enforceable or risk-free. Always consult a licensed attorney for critical contract negotiations.
+          <p className="text-center text-[11px] text-slate-400 max-w-2xl mx-auto leading-relaxed">
+            Review assistance only. Findings are potential issues for human review, not legal advice. Always consult qualified legal counsel for binding negotiations.
           </p>
         </div>
       </footer>

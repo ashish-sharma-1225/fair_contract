@@ -1,9 +1,8 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { History, Search, FileText, ArrowRight } from 'lucide-react';
+import { History, Search, ArrowRight } from 'lucide-react';
 import { PageHeader } from '../../components/layout/PageHeader';
 import { Button } from '../../components/ui/Button';
-import { Card, CardContent } from '../../components/ui/Card';
 import { RiskBadge } from '../../components/ui/RiskBadge';
 import { EmptyState } from '../../components/ui/EmptyState';
 import { demoStore } from '../../mocks/demo-store';
@@ -46,30 +45,32 @@ export function HistoryPage() {
         }
       />
 
-      {/* Filter and Search Bar */}
-      <div className="flex flex-col sm:flex-row gap-3 items-stretch sm:items-center justify-between rounded-xl border border-slate-200 bg-white p-4 shadow-xs">
-        <div className="relative flex-1">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+      {/* Filter and Search Toolbar */}
+      <div className="flex flex-col sm:flex-row gap-2.5 items-stretch sm:items-center justify-between py-1 text-xs">
+        <div className="relative flex-1 max-w-sm">
+          <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-400" />
           <input
             type="text"
+            aria-label="Search analyses"
             placeholder="Search by contract name or summary..."
             value={searchQuery}
             onChange={e => setSearchQuery(e.target.value)}
-            className="w-full pl-9 pr-3 py-2 text-xs rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+            className="w-full h-8 pl-8 pr-2.5 text-xs rounded border border-slate-200 focus:outline-none focus:border-slate-400 bg-white text-slate-800 placeholder-slate-400"
           />
         </div>
 
         <select
+          aria-label="Filter severity"
           value={severityFilter}
           onChange={e =>
             setSeverityFilter(e.target.value as RiskSeverity | 'all')
           }
-          className="rounded-lg border border-slate-300 bg-white py-1.5 px-3 text-xs font-medium text-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer"
+          className="h-8 rounded border border-slate-200 bg-white px-2.5 text-xs font-normal text-slate-700 hover:border-slate-300 focus:outline-none focus:border-slate-400 cursor-pointer"
         >
-          <option value="all">All Risk Levels</option>
-          <option value="high">High Risk Scans</option>
-          <option value="medium">Medium Warning Scans</option>
-          <option value="low">Low Notice Scans</option>
+          <option value="all">All risk levels</option>
+          <option value="high">High risk</option>
+          <option value="medium">Medium warning</option>
+          <option value="low">Low notice</option>
         </select>
       </div>
 
@@ -80,13 +81,13 @@ export function HistoryPage() {
           title="No analysis history found"
           description={
             searchQuery || severityFilter !== 'all'
-              ? 'No prior analysis matches your filter criteria. Try resetting your search.'
+              ? 'No prior analysis matches your filter criteria.'
               : 'You have not performed any contract scans yet.'
           }
-          actionLabel="Run Contract Analysis"
+          actionLabel="Run contract analysis"
           onAction={() => navigate('/contracts/new')}
           secondaryActionLabel={
-            searchQuery || severityFilter !== 'all' ? 'Reset Filters' : undefined
+            searchQuery || severityFilter !== 'all' ? 'Reset filters' : undefined
           }
           onSecondaryAction={() => {
             setSearchQuery('');
@@ -94,66 +95,60 @@ export function HistoryPage() {
           }}
         />
       ) : (
-        <div className="space-y-3">
+        <div className="space-y-2.5">
           {filteredAnalyses.map(analysis => (
-            <Card
+            <div
               key={analysis.id}
               onClick={() => navigate(`/analyses/${analysis.id}`)}
-              className="hover:border-blue-400 hover:shadow-md transition-all cursor-pointer group"
+              className="rounded-lg border border-slate-200 bg-white p-4 hover:border-slate-300 transition-colors cursor-pointer text-xs flex flex-col md:flex-row md:items-center justify-between gap-3"
             >
-              <CardContent className="p-5 flex flex-col md:flex-row md:items-center justify-between gap-4">
-                <div className="flex items-start gap-4 min-w-0">
-                  <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-blue-50 text-blue-600 group-hover:bg-blue-100 transition-colors">
-                    <FileText className="w-6 h-6" />
-                  </div>
-                  <div className="min-w-0">
-                    <div className="flex items-center gap-2.5 flex-wrap">
-                      <h4 className="text-sm font-bold text-slate-900 group-hover:text-blue-600 transition-colors truncate">
-                        {analysis.contract_name}
-                      </h4>
-                      <RiskBadge
-                        severity={analysis.overall_risk_level}
-                        size="sm"
-                      />
-                    </div>
-                    <p className="text-xs text-slate-600 mt-1 line-clamp-2 leading-relaxed">
-                      {analysis.summary}
-                    </p>
-                    <div className="flex items-center gap-3 text-[11px] text-slate-400 mt-2 flex-wrap">
-                      <span>Report #{analysis.id}</span>
-                      <span>•</span>
-                      <span>Analyzed {formatDate(analysis.created_at)}</span>
-                      <span>•</span>
-                      <span>{analysis.model_name}</span>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="flex items-center gap-4 shrink-0 self-end md:self-center">
-                  <div className="text-right">
-                    <span className="text-xs font-bold text-slate-900 block">
-                      {analysis.findings_count.total} Findings Total
-                    </span>
-                    <span className="text-[11px] font-semibold text-red-600 block">
-                      {analysis.findings_count.high} High-Risk Breaches
-                    </span>
-                  </div>
-
-                  <Button
-                    variant="outline"
+              <div className="min-w-0">
+                <div className="flex items-center gap-2 flex-wrap">
+                  <span className="font-medium text-slate-900 text-sm">
+                    {analysis.contract_name}
+                  </span>
+                  <RiskBadge
+                    severity={analysis.overall_risk_level}
                     size="sm"
-                    onClick={() => navigate(`/analyses/${analysis.id}`)}
-                    rightIcon={<ArrowRight className="w-3.5 h-3.5" />}
-                    className="text-xs group-hover:bg-blue-600 group-hover:text-white group-hover:border-blue-600"
-                  >
-                    View Findings
-                  </Button>
+                  />
                 </div>
-              </CardContent>
-            </Card>
+                <p className="text-slate-600 mt-1 line-clamp-1 leading-relaxed">
+                  {analysis.summary}
+                </p>
+                <div className="flex items-center gap-2 text-[11px] text-slate-400 mt-1.5 flex-wrap">
+                  <span>Report #{analysis.id}</span>
+                  <span>·</span>
+                  <span>Completed {formatDate(analysis.created_at)}</span>
+                  <span>·</span>
+                  <span>{analysis.model_name}</span>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-3 shrink-0 self-end md:self-center">
+                <div className="text-right">
+                  <span className="font-medium text-slate-800 block">
+                    {analysis.findings_count.total} findings
+                  </span>
+                  <span className="text-[11px] text-red-700 block">
+                    {analysis.findings_count.high} high risk
+                  </span>
+                </div>
+
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => navigate(`/analyses/${analysis.id}`)}
+                  rightIcon={<ArrowRight className="w-3 h-3" />}
+                  className="text-xs"
+                >
+                  View report
+                </Button>
+              </div>
+            </div>
           ))}
         </div>
       )}
     </div>
   );
 }
+

@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Scale, Eye, EyeOff, Lock, Mail, Sparkles, ArrowRight } from 'lucide-react';
+import { Scale, Eye, EyeOff, Lock, Mail, ArrowRight } from 'lucide-react';
 import { Button } from '../../components/ui/Button';
 import { Input } from '../../components/ui/Input';
 import { Card, CardContent } from '../../components/ui/Card';
@@ -26,48 +26,39 @@ export function LoginPage() {
   });
 
   const onSubmit = () => {
-    // Navigate into the dashboard workspace
     navigate('/dashboard');
   };
-
 
   return (
     <div className="min-h-screen bg-slate-50 flex flex-col justify-center py-12 px-4 sm:px-6 lg:px-8">
       <div className="sm:mx-auto sm:w-full sm:max-w-md text-center">
-        <Link to="/" className="inline-flex items-center gap-2 mb-4">
-          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-blue-600 text-white shadow-xs">
-            <Scale className="w-6 h-6" />
-          </div>
-          <span className="text-xl font-bold text-slate-900 tracking-tight">
+        <Link to="/" className="inline-flex items-center gap-2 mb-3">
+          <Scale className="w-5 h-5 text-blue-600" />
+          <span className="text-lg font-semibold text-slate-900 tracking-tight">
             ClauseLens
           </span>
         </Link>
-        <h2 className="text-2xl font-bold tracking-tight text-slate-900">
+        <h2 className="text-xl font-bold tracking-tight text-slate-900">
           Sign in to your account
         </h2>
         <p className="mt-1 text-xs text-slate-500">
           Or{' '}
           <Link
             to="/register"
-            className="font-semibold text-blue-600 hover:text-blue-500 underline"
+            className="font-medium text-blue-600 hover:text-blue-700 underline"
           >
             create a new account
           </Link>
         </p>
       </div>
 
-      <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
-        <Card className="shadow-lg border-slate-200">
-          <CardContent className="p-6 sm:p-8 space-y-6">
-            {/* Demo Notice Banner */}
-            <div className="rounded-xl border border-blue-200 bg-blue-50/70 p-3.5 flex items-start gap-2.5 text-xs text-blue-900">
-              <Sparkles className="w-4 h-4 text-blue-600 shrink-0 mt-0.5" />
-              <div>
-                <strong>Hackathon Demo Mode: </strong>
-                <span>
-                  Backend auth endpoints will be wired in Stage 2. You can sign in with any email or click below to enter immediately.
-                </span>
-              </div>
+      <div className="mt-6 sm:mx-auto sm:w-full sm:max-w-md">
+        <Card className="shadow-xs border-slate-200 bg-white">
+          <CardContent className="p-6 space-y-5">
+            {/* Demo Notice */}
+            <div className="rounded border border-slate-200 bg-slate-50 p-3 text-xs text-slate-600 leading-relaxed">
+              <span className="font-semibold text-slate-900">Interactive Demo: </span>
+              Pre-filled credentials allow instant entry into the contract review workspace.
             </div>
 
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
@@ -109,7 +100,7 @@ export function LoginPage() {
                     type="checkbox"
                     id="rememberMe"
                     {...register('rememberMe')}
-                    className="h-4 w-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500"
+                    className="h-3.5 w-3.5 rounded border-slate-300 text-blue-600 focus:ring-blue-500"
                   />
                   <label htmlFor="rememberMe" className="text-slate-600">
                     Remember me
@@ -120,9 +111,9 @@ export function LoginPage() {
                   href="#forgot"
                   onClick={e => {
                     e.preventDefault();
-                    alert('Password recovery will be handled by the FastAPI auth backend.');
+                    alert('Password recovery is disabled in demo mode.');
                   }}
-                  className="font-medium text-blue-600 hover:underline"
+                  className="font-medium text-slate-500 hover:text-slate-700"
                 >
                   Forgot password?
                 </a>
@@ -137,9 +128,9 @@ export function LoginPage() {
               <div className="absolute inset-0 flex items-center">
                 <div className="w-full border-t border-slate-200" />
               </div>
-              <div className="relative flex justify-center text-xs uppercase">
-                <span className="bg-white px-2 text-slate-400 font-semibold">
-                  Or Instant Demo Access
+              <div className="relative flex justify-center text-xs">
+                <span className="bg-white px-2 text-slate-400 font-medium">
+                  Direct Access
                 </span>
               </div>
             </div>
@@ -150,7 +141,7 @@ export function LoginPage() {
               size="md"
               onClick={() => navigate('/dashboard')}
               rightIcon={<ArrowRight className="w-4 h-4" />}
-              className="w-full bg-slate-50 hover:bg-slate-100 font-semibold"
+              className="w-full bg-white font-medium"
             >
               Enter Demo Workspace Directly
             </Button>

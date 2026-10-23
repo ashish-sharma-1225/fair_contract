@@ -73,20 +73,9 @@ export function getCategoryLabel(category: ClauseCategory): string {
   }
 }
 
-export function getCategoryBadgeClasses(category: ClauseCategory): string {
-  switch (category) {
-    case 'payment':
-      return 'bg-blue-50 text-blue-700 border-blue-200';
-    case 'renewal':
-      return 'bg-amber-50 text-amber-700 border-amber-200';
-    case 'liability':
-      return 'bg-purple-50 text-purple-700 border-purple-200';
-    case 'jurisdiction':
-      return 'bg-teal-50 text-teal-700 border-teal-200';
-    case 'other':
-    default:
-      return 'bg-slate-50 text-slate-700 border-slate-200';
-  }
+export function getCategoryBadgeClasses(_category: ClauseCategory): string {
+  // Plain neutral styling across categories to avoid visual noise
+  return 'text-slate-600 bg-slate-100/80 border-slate-200/80';
 }
 
 export function getSeverityClasses(severity: RiskSeverity): {
@@ -99,27 +88,28 @@ export function getSeverityClasses(severity: RiskSeverity): {
   switch (severity) {
     case 'high':
       return {
-        badge: 'bg-red-50 text-red-700 border-red-200',
+        badge: 'bg-red-50 text-red-700 border-red-200/80',
         pill: 'bg-red-600 text-white',
-        bgLight: 'bg-red-50/50',
-        border: 'border-red-200',
+        bgLight: 'bg-red-50/40',
+        border: 'border-red-200/80',
         text: 'text-red-700',
       };
     case 'medium':
       return {
-        badge: 'bg-amber-50 text-amber-700 border-amber-200',
-        pill: 'bg-amber-500 text-white',
-        bgLight: 'bg-amber-50/50',
-        border: 'border-amber-200',
-        text: 'text-amber-700',
+        badge: 'bg-amber-50 text-amber-800 border-amber-200/80',
+        pill: 'bg-amber-600 text-white',
+        bgLight: 'bg-amber-50/40',
+        border: 'border-amber-200/80',
+        text: 'text-amber-800',
       };
     case 'low':
       return {
-        badge: 'bg-sky-50 text-sky-700 border-sky-200',
-        pill: 'bg-sky-600 text-white',
-        bgLight: 'bg-sky-50/50',
-        border: 'border-sky-200',
-        text: 'text-sky-700',
+        badge: 'bg-slate-100 text-slate-700 border-slate-200',
+        pill: 'bg-slate-600 text-white',
+        bgLight: 'bg-slate-50',
+        border: 'border-slate-200',
+        text: 'text-slate-700',
       };
   }
 }
+

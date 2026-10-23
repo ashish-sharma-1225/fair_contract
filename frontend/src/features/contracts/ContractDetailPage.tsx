@@ -1,19 +1,16 @@
 import { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import {
-  FileText,
   CheckCircle2,
   Trash2,
   Play,
   Download,
-  Eye,
   Copy,
   Check,
   AlertCircle,
 } from 'lucide-react';
 import { PageHeader } from '../../components/layout/PageHeader';
 import { Button } from '../../components/ui/Button';
-import { Card, CardHeader, CardTitle, CardContent } from '../../components/ui/Card';
 import { StatusBadge } from '../../components/ui/StatusBadge';
 import { RiskBadge } from '../../components/ui/RiskBadge';
 import { ConfirmDialog } from '../../components/ui/ConfirmDialog';
@@ -64,20 +61,30 @@ export function ContractDetailPage() {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-5">
       <PageHeader
+        breadcrumb={
+          <div className="flex items-center gap-1.5 text-xs text-slate-500">
+            <span
+              onClick={() => navigate('/contracts')}
+              className="hover:text-slate-900 cursor-pointer transition-colors"
+            >
+              Contracts
+            </span>
+            <span className="text-slate-400">/</span>
+            <span className="text-slate-700">Contract details</span>
+          </div>
+        }
         title={contract.filename_original}
-        description="Inspect contract metadata, cryptographic integrity, and historical clause risk scans."
-        backTo="/contracts"
-        backLabel="All Contracts"
+        description="Contract metadata, cryptographic integrity, and historical clause risk analyses."
         badge={<StatusBadge status={contract.status} />}
         actions={
           <div className="flex items-center gap-2">
             <Button
               variant="outline"
               size="sm"
-              onClick={() => alert('Mock download started: ' + contract.filename_original)}
-              leftIcon={<Download className="w-4 h-4" />}
+              onClick={() => alert('Download: ' + contract.filename_original)}
+              leftIcon={<Download className="w-3.5 h-3.5" />}
               className="text-xs"
             >
               Download PDF
@@ -86,203 +93,172 @@ export function ContractDetailPage() {
               variant="primary"
               size="sm"
               onClick={() => navigate('/contracts/new')}
-              leftIcon={<Play className="w-4 h-4" />}
+              leftIcon={<Play className="w-3.5 h-3.5" />}
               className="text-xs"
             >
-              Run New Analysis
+              Run analysis
             </Button>
             <Button
               variant="outline"
               size="sm"
               onClick={() => setIsDeleteDialogOpen(true)}
-              className="text-xs text-red-600 hover:bg-red-50 hover:border-red-200"
+              className="text-xs text-slate-500 hover:text-red-700"
+              aria-label="Delete contract"
             >
-              <Trash2 className="w-4 h-4" />
+              <Trash2 className="w-3.5 h-3.5" />
             </Button>
           </div>
         }
       />
 
-      {/* Metadata Card */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Contract Information & Integrity Verification</CardTitle>
-          <p className="text-xs text-slate-500">
-            Document properties registered in private file storage and database
-          </p>
-        </CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 text-xs">
-            {/* File details */}
-            <div className="p-3.5 rounded-xl bg-slate-50 border border-slate-200/80">
-              <span className="text-slate-400 block text-[11px] uppercase tracking-wider font-semibold">
-                File Details
-              </span>
-              <span className="font-bold text-slate-900 mt-1 block truncate">
-                {contract.filename_original}
-              </span>
-              <span className="text-slate-500 text-[11px] mt-0.5 block">
-                {formatBytes(contract.size_bytes)} • {contract.page_count} pages
-              </span>
-            </div>
-
-            {/* Storage key */}
-            <div className="p-3.5 rounded-xl bg-slate-50 border border-slate-200/80">
-              <span className="text-slate-400 block text-[11px] uppercase tracking-wider font-semibold">
-                Private Storage Key
-              </span>
-              <span className="font-mono text-slate-800 text-[11px] mt-1 block truncate">
-                {contract.storage_key}
-              </span>
-              <span className="text-slate-400 text-[10px] mt-0.5 block">
-                Restricted access (No public URL)
-              </span>
-            </div>
-
-            {/* SHA-256 Hash */}
-            <div className="p-3.5 rounded-xl bg-slate-50 border border-slate-200/80">
-              <span className="text-slate-400 block text-[11px] uppercase tracking-wider font-semibold">
-                SHA-256 Integrity Hash
-              </span>
-              <div className="flex items-center gap-1.5 mt-1">
-                <span className="font-mono text-[11px] text-slate-800">
-                  {truncateHash(contract.sha256, 8, 8)}
-                </span>
-                <button
-                  type="button"
-                  onClick={handleCopyHash}
-                  className="p-1 text-slate-400 hover:text-slate-700 transition-colors"
-                  title="Copy full hash"
-                >
-                  {copiedHash ? (
-                    <Check className="w-3.5 h-3.5 text-emerald-600" />
-                  ) : (
-                    <Copy className="w-3.5 h-3.5" />
-                  )}
-                </button>
-              </div>
-              <span className="text-emerald-700 font-semibold text-[10px] flex items-center gap-1 mt-0.5">
-                <CheckCircle2 className="w-3 h-3" />
-                SHA-256 Verified Unchanged
-              </span>
-            </div>
-
-            {/* Uploaded date */}
-            <div className="p-3.5 rounded-xl bg-slate-50 border border-slate-200/80">
-              <span className="text-slate-400 block text-[11px] uppercase tracking-wider font-semibold">
-                Uploaded At
-              </span>
-              <span className="font-bold text-slate-900 mt-1 block">
-                {formatDate(contract.uploaded_at)}
-              </span>
-              <span className="text-slate-400 text-[10px] mt-0.5 block">
-                Owner ID: {contract.owner_id}
-              </span>
-            </div>
+      {/* Metadata Overview */}
+      <section className="rounded-lg border border-slate-200 bg-white p-4">
+        <h2 className="text-xs font-semibold uppercase tracking-wider text-slate-500 mb-3">
+          Contract Details & Cryptographic Integrity
+        </h2>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 text-xs">
+          <div className="p-3 rounded border border-slate-100 bg-slate-50/60">
+            <span className="text-slate-400 block text-[11px]">Filename</span>
+            <span className="font-medium text-slate-900 block mt-0.5 truncate">
+              {contract.filename_original}
+            </span>
+            <span className="text-slate-500 text-[11px] mt-0.5 block">
+              {formatBytes(contract.size_bytes)} · {contract.page_count} pages
+            </span>
           </div>
-        </CardContent>
-      </Card>
 
-      {/* Tabs: Analysis History vs Text Extraction */}
+          <div className="p-3 rounded border border-slate-100 bg-slate-50/60">
+            <span className="text-slate-400 block text-[11px]">Storage Key</span>
+            <span className="font-mono text-slate-700 text-[11px] block mt-0.5 truncate">
+              {contract.storage_key}
+            </span>
+            <span className="text-slate-400 text-[10px] mt-0.5 block">
+              Private storage
+            </span>
+          </div>
+
+          <div className="p-3 rounded border border-slate-100 bg-slate-50/60">
+            <span className="text-slate-400 block text-[11px]">SHA-256 Hash</span>
+            <div className="flex items-center gap-1 mt-0.5">
+              <span className="font-mono text-[11px] text-slate-700">
+                {truncateHash(contract.sha256, 8, 8)}
+              </span>
+              <button
+                type="button"
+                onClick={handleCopyHash}
+                className="p-0.5 text-slate-400 hover:text-slate-700 transition-colors"
+                title="Copy hash"
+              >
+                {copiedHash ? (
+                  <Check className="w-3 h-3 text-emerald-600" />
+                ) : (
+                  <Copy className="w-3 h-3" />
+                )}
+              </button>
+            </div>
+            <span className="text-emerald-700 text-[10px] font-medium flex items-center gap-1 mt-0.5">
+              <CheckCircle2 className="w-3 h-3" />
+              Verified integrity
+            </span>
+          </div>
+
+          <div className="p-3 rounded border border-slate-100 bg-slate-50/60">
+            <span className="text-slate-400 block text-[11px]">Uploaded Date</span>
+            <span className="font-medium text-slate-900 block mt-0.5">
+              {formatDate(contract.uploaded_at)}
+            </span>
+            <span className="text-slate-400 text-[10px] mt-0.5 block">
+              Owner: {contract.owner_id}
+            </span>
+          </div>
+        </div>
+      </section>
+
+      {/* Tabs */}
       <div className="space-y-4">
-        <div className="flex items-center gap-2 border-b border-slate-200">
+        <div className="flex items-center gap-4 border-b border-slate-200 text-xs">
           <button
             type="button"
             onClick={() => setActiveTab('analyses')}
-            className={`pb-3 px-3 text-xs font-bold border-b-2 transition-colors cursor-pointer ${
+            className={`pb-2.5 font-medium border-b-2 transition-colors cursor-pointer ${
               activeTab === 'analyses'
-                ? 'border-blue-600 text-blue-600'
+                ? 'border-slate-900 text-slate-900'
                 : 'border-transparent text-slate-500 hover:text-slate-800'
             }`}
           >
-            Past Analyses ({analyses.length})
+            Past analyses ({analyses.length})
           </button>
           <button
             type="button"
             onClick={() => setActiveTab('preview')}
-            className={`pb-3 px-3 text-xs font-bold border-b-2 transition-colors cursor-pointer ${
+            className={`pb-2.5 font-medium border-b-2 transition-colors cursor-pointer ${
               activeTab === 'preview'
-                ? 'border-blue-600 text-blue-600'
+                ? 'border-slate-900 text-slate-900'
                 : 'border-transparent text-slate-500 hover:text-slate-800'
             }`}
           >
-            Extracted Text Preview
+            Extracted text preview
           </button>
         </div>
 
         {/* Tab 1: Past Analyses */}
         {activeTab === 'analyses' && (
-          <div className="space-y-3">
+          <div className="space-y-2.5">
             {analyses.length === 0 ? (
-              <Card className="p-8 text-center border-dashed">
-                <AlertCircle className="w-8 h-8 text-slate-400 mx-auto mb-2" />
-                <h4 className="text-sm font-semibold text-slate-900">
+              <div className="rounded-lg border border-dashed border-slate-200 bg-white p-8 text-center text-xs">
+                <AlertCircle className="w-6 h-6 text-slate-400 mx-auto mb-2" />
+                <h3 className="font-medium text-slate-900">
                   No analyses performed yet
-                </h4>
-                <p className="text-xs text-slate-500 mt-1 max-w-sm mx-auto">
-                  Run your first analysis on this contract to identify high-risk payment terms and liability conditions.
+                </h3>
+                <p className="text-slate-500 mt-1 max-w-sm mx-auto">
+                  Run an analysis on this contract to identify high-risk payment terms and liability conditions.
                 </p>
                 <Button
                   variant="primary"
                   size="sm"
                   onClick={() => navigate('/contracts/new')}
-                  className="mt-4"
+                  className="mt-3 text-xs"
                 >
-                  Analyze Contract Now
+                  Analyze contract
                 </Button>
-              </Card>
+              </div>
             ) : (
               analyses.map(analysis => (
-                <Card
+                <div
                   key={analysis.id}
                   onClick={() => navigate(`/analyses/${analysis.id}`)}
-                  className="hover:border-blue-300 hover:shadow-md transition-all cursor-pointer"
+                  className="rounded-lg border border-slate-200 bg-white p-3.5 hover:border-slate-300 transition-colors cursor-pointer flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs"
                 >
-                  <CardContent className="p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                    <div className="flex items-start gap-3">
-                      <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-blue-50 text-blue-600">
-                        <FileText className="w-5 h-5" />
-                      </div>
-                      <div>
-                        <div className="flex items-center gap-2">
-                          <h4 className="text-xs font-bold text-slate-900">
-                            Analysis #{analysis.id}
-                          </h4>
-                          <RiskBadge
-                            severity={analysis.overall_risk_level}
-                            size="sm"
-                          />
-                        </div>
-                        <p className="text-xs text-slate-600 mt-1 line-clamp-1">
-                          {analysis.summary}
-                        </p>
-                        <span className="text-[11px] text-slate-400 mt-1 block">
-                          Completed {formatDate(analysis.created_at)} •{' '}
-                          {analysis.model_name}
-                        </span>
-                      </div>
-                    </div>
-
-                    <div className="flex items-center gap-3 shrink-0 self-end sm:self-center">
-                      <div className="text-right">
-                        <span className="text-xs font-bold text-slate-900 block">
-                          {analysis.findings_count.total} findings
-                        </span>
-                        <span className="text-[11px] font-semibold text-red-600 block">
-                          {analysis.findings_count.high} high risk
-                        </span>
-                      </div>
-                      <Button
-                        variant="ghost"
+                  <div>
+                    <div className="flex items-center gap-2">
+                      <span className="font-medium text-slate-900">
+                        Analysis #{analysis.id}
+                      </span>
+                      <RiskBadge
+                        severity={analysis.overall_risk_level}
                         size="sm"
-                        onClick={() => navigate(`/analyses/${analysis.id}`)}
-                        className="text-xs text-blue-600"
-                      >
-                        <Eye className="w-4 h-4" />
-                      </Button>
+                      />
                     </div>
-                  </CardContent>
-                </Card>
+                    <p className="text-slate-600 mt-1 line-clamp-1">
+                      {analysis.summary}
+                    </p>
+                    <span className="text-[11px] text-slate-400 mt-0.5 block">
+                      Completed {formatDate(analysis.created_at)} · {analysis.model_name}
+                    </span>
+                  </div>
+
+                  <div className="flex items-center gap-3 shrink-0 self-end sm:self-center">
+                    <div className="text-right">
+                      <span className="font-medium text-slate-900 block">
+                        {analysis.findings_count.total} findings
+                      </span>
+                      <span className="text-[11px] text-red-700 block">
+                        {analysis.findings_count.high} high risk
+                      </span>
+                    </div>
+                    <span className="text-slate-400">→</span>
+                  </div>
+                </div>
               ))
             )}
           </div>
@@ -290,39 +266,35 @@ export function ContractDetailPage() {
 
         {/* Tab 2: Extracted Text Preview */}
         {activeTab === 'preview' && (
-          <Card>
-            <CardHeader>
-              <div className="flex items-center justify-between">
-                <div>
-                  <CardTitle>Document Text Structure</CardTitle>
-                  <p className="text-xs text-slate-500">
-                    PyMuPDF extraction with page segmentation
-                  </p>
-                </div>
-                <div className="flex items-center gap-1.5">
-                  {mockSampleContractText.pages.map((p, idx) => (
-                    <button
-                      key={p.page_number}
-                      type="button"
-                      onClick={() => setPreviewPageIndex(idx)}
-                      className={`px-2.5 py-1 rounded text-xs font-semibold ${
-                        previewPageIndex === idx
-                          ? 'bg-blue-600 text-white'
-                          : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
-                      }`}
-                    >
-                      Pg {p.page_number}
-                    </button>
-                  ))}
-                </div>
+          <div className="rounded-lg border border-slate-200 bg-white p-4 space-y-3">
+            <div className="flex items-center justify-between text-xs">
+              <div>
+                <h3 className="font-medium text-slate-900">Document Text</h3>
+                <p className="text-slate-500">
+                  Extracted with page segmentation
+                </p>
               </div>
-            </CardHeader>
-            <CardContent>
-              <div className="rounded-xl border border-slate-300 bg-slate-900 text-slate-100 p-4 font-mono text-xs leading-relaxed max-h-96 overflow-y-auto whitespace-pre-wrap select-text">
-                {mockSampleContractText.pages[previewPageIndex]?.text}
+              <div className="flex items-center gap-1">
+                {mockSampleContractText.pages.map((p, idx) => (
+                  <button
+                    key={p.page_number}
+                    type="button"
+                    onClick={() => setPreviewPageIndex(idx)}
+                    className={`px-2 py-0.5 rounded text-xs transition-colors ${
+                      previewPageIndex === idx
+                        ? 'bg-slate-800 text-white font-medium'
+                        : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                    }`}
+                  >
+                    Pg {p.page_number}
+                  </button>
+                ))}
               </div>
-            </CardContent>
-          </Card>
+            </div>
+            <div className="rounded border border-slate-200 bg-slate-50 text-slate-800 p-3.5 font-mono text-xs leading-relaxed max-h-80 overflow-y-auto whitespace-pre-wrap select-text">
+              {mockSampleContractText.pages[previewPageIndex]?.text}
+            </div>
+          </div>
         )}
       </div>
 
@@ -330,8 +302,8 @@ export function ContractDetailPage() {
       <ConfirmDialog
         isOpen={isDeleteDialogOpen}
         title="Delete Contract Permanently?"
-        description={`This will erase "${contract.filename_original}", all extracted text, and ${analyses.length} associated analysis reports from local storage.`}
-        confirmLabel="Delete Contract"
+        description={`This will remove "${contract.filename_original}", all extracted text, and ${analyses.length} associated analysis reports from local storage.`}
+        confirmLabel="Delete contract"
         variant="danger"
         onConfirm={handleDelete}
         onClose={() => setIsDeleteDialogOpen(false)}
@@ -339,3 +311,4 @@ export function ContractDetailPage() {
     </div>
   );
 }
+

@@ -1,13 +1,11 @@
 import type { ReactNode } from 'react';
-import { Card } from './Card';
 import { cn } from '../../lib/utils';
 
 export interface StatCardProps {
   title: string;
   value: string | number;
   subtitle?: string;
-  icon: ReactNode;
-
+  icon?: ReactNode;
   iconBgColor?: string;
   trendText?: string;
   trendType?: 'positive' | 'negative' | 'neutral';
@@ -20,38 +18,38 @@ export function StatCard({
   value,
   subtitle,
   icon,
-  iconBgColor = 'bg-blue-50 text-blue-600',
   trendText,
   trendType = 'neutral',
   onClick,
   className,
 }: StatCardProps) {
   return (
-    <Card
+    <div
       onClick={onClick}
       className={cn(
-        'p-5 transition-all duration-200 hover:shadow-md border-slate-200/80',
-        onClick && 'cursor-pointer hover:border-blue-300',
+        'rounded-lg border border-slate-200 bg-white p-4 transition-colors',
+        onClick && 'cursor-pointer hover:border-slate-300',
         className
       )}
     >
-      <div className="flex items-start justify-between">
+      <div className="flex items-start justify-between gap-3">
         <div>
-          <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider">
+          <p className="text-xs font-medium text-slate-500">
             {title}
           </p>
-          <h4 className="mt-2 text-2xl font-bold tracking-tight text-slate-900">
+          <div className="mt-1 text-2xl font-semibold tracking-tight text-slate-900">
             {value}
-          </h4>
+          </div>
           {subtitle && (
-            <p className="mt-1 text-xs text-slate-500 font-medium">{subtitle}</p>
+            <p className="mt-1 text-xs text-slate-500">{subtitle}</p>
           )}
           {trendText && (
-            <div className="mt-2 flex items-center gap-1.5 text-xs font-medium">
+            <div className="mt-1.5 flex items-center gap-1.5 text-xs">
               <span
                 className={cn(
-                  trendType === 'positive' && 'text-emerald-600',
-                  trendType === 'negative' && 'text-red-600',
+                  'font-medium',
+                  trendType === 'positive' && 'text-emerald-700',
+                  trendType === 'negative' && 'text-red-700',
                   trendType === 'neutral' && 'text-slate-500'
                 )}
               >
@@ -60,15 +58,13 @@ export function StatCard({
             </div>
           )}
         </div>
-        <div
-          className={cn(
-            'flex h-11 w-11 items-center justify-center rounded-xl',
-            iconBgColor
-          )}
-        >
-          {icon}
-        </div>
+        {icon && (
+          <div className="text-slate-400 shrink-0 mt-0.5">
+            {icon}
+          </div>
+        )}
       </div>
-    </Card>
+    </div>
   );
 }
+

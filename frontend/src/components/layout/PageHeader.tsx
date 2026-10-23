@@ -6,6 +6,7 @@ import { cn } from '../../lib/utils';
 export interface PageHeaderProps {
   title: string;
   description?: string;
+  breadcrumb?: ReactNode;
   backTo?: string;
   backLabel?: string;
   badge?: ReactNode;
@@ -13,10 +14,10 @@ export interface PageHeaderProps {
   className?: string;
 }
 
-
 export function PageHeader({
   title,
   description,
+  breadcrumb,
   backTo,
   backLabel = 'Back',
   badge,
@@ -28,23 +29,28 @@ export function PageHeader({
   return (
     <div
       className={cn(
-        'flex flex-col gap-4 md:flex-row md:items-center md:justify-between pb-6 border-b border-slate-200/80 mb-6',
+        'flex flex-col gap-4 md:flex-row md:items-start md:justify-between pb-4 border-b border-slate-200 mb-6',
         className
       )}
     >
       <div>
-        {backTo && (
+        {breadcrumb && (
+          <div className="mb-1 text-xs text-slate-500 font-normal">
+            {breadcrumb}
+          </div>
+        )}
+        {!breadcrumb && backTo && (
           <button
             type="button"
             onClick={() => navigate(backTo)}
-            className="mb-2 inline-flex items-center gap-1.5 text-xs font-semibold text-slate-500 hover:text-blue-600 transition-colors cursor-pointer"
+            className="mb-1.5 inline-flex items-center gap-1.5 text-xs text-slate-500 hover:text-slate-900 transition-colors cursor-pointer"
           >
-            <ArrowLeft className="w-3.5 h-3.5" />
+            <ArrowLeft className="w-3 h-3" />
             <span>{backLabel}</span>
           </button>
         )}
         <div className="flex items-center gap-2.5 flex-wrap">
-          <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-slate-900">
+          <h1 className="text-xl sm:text-2xl font-semibold tracking-tight text-slate-900">
             {title}
           </h1>
           {badge}
@@ -57,10 +63,11 @@ export function PageHeader({
       </div>
 
       {actions && (
-        <div className="flex items-center gap-2.5 shrink-0 flex-wrap">
+        <div className="flex items-center gap-2 shrink-0 flex-wrap">
           {actions}
         </div>
       )}
     </div>
   );
 }
+

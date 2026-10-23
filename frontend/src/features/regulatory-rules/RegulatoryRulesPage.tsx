@@ -1,13 +1,10 @@
 import { useState } from 'react';
 import {
-  Scale,
   ExternalLink,
   CheckCircle2,
-  Globe,
 } from 'lucide-react';
 import { PageHeader } from '../../components/layout/PageHeader';
 import { Button } from '../../components/ui/Button';
-import { Card, CardContent } from '../../components/ui/Card';
 import { RuleTypeBadge } from '../../components/ui/StatusBadge';
 import { demoStore } from '../../mocks/demo-store';
 import { getCategoryLabel } from '../../lib/utils';
@@ -41,131 +38,118 @@ export function RegulatoryRulesPage() {
         description="Curated statutory frameworks and verified commercial codes used to evaluate contract compliance."
       />
 
-      {/* Distinction Explainer Banner */}
-      <div className="rounded-xl border border-indigo-200 bg-indigo-50/50 p-4">
-        <div className="flex items-start gap-3">
-          <Scale className="w-5 h-5 text-indigo-600 shrink-0 mt-0.5" />
-          <div className="text-xs text-indigo-950 space-y-1">
-            <span className="font-bold">
-              Distinguishing Legal Authorities from Personal Preferences:
-            </span>
-            <p className="leading-relaxed">
-              Rules listed here represent official statutory laws and published administrative directives (such as the UK Late Payment Act and EU Unfair Contract Terms Directive). They operate alongside your user-defined business policies to highlight contractual imbalances.
-            </p>
-          </div>
-        </div>
+      {/* Explainer Notice */}
+      <div className="rounded border border-slate-200 bg-slate-50 px-3.5 py-2.5 text-xs text-slate-600">
+        <p>
+          <strong className="text-slate-800">Statutory and Regulatory Standards:</strong> Rules listed here represent official laws and administrative directives used alongside custom policies to detect contract imbalances.
+        </p>
       </div>
 
-      {/* Filter and stats row */}
-      <div className="flex flex-col sm:flex-row gap-3 items-stretch sm:items-center justify-between rounded-xl border border-slate-200 bg-white p-4 shadow-xs">
+      {/* Filter and stats toolbar */}
+      <div className="flex flex-col sm:flex-row gap-2.5 items-stretch sm:items-center justify-between py-1 text-xs">
         <div className="flex items-center gap-2">
-          <Globe className="w-4 h-4 text-slate-400" />
-          <span className="text-xs font-semibold text-slate-700">Filter Jurisdiction:</span>
+          <span className="text-slate-500">Jurisdiction:</span>
           <select
+            aria-label="Filter jurisdiction"
             value={jurisdictionFilter}
             onChange={e => setJurisdictionFilter(e.target.value)}
-            className="rounded-lg border border-slate-300 bg-white py-1.5 px-3 text-xs font-medium text-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer"
+            className="h-8 rounded border border-slate-200 bg-white px-2.5 text-xs font-normal text-slate-700 hover:border-slate-300 focus:outline-none focus:border-slate-400 cursor-pointer"
           >
-            <option value="all">All Jurisdictions</option>
+            <option value="all">All jurisdictions</option>
             <option value="United Kingdom">United Kingdom</option>
             <option value="European Union">European Union</option>
             <option value="United States">United States</option>
           </select>
         </div>
 
-        <div className="text-xs text-slate-500 font-medium">
-          <strong className="text-slate-800">{rules.filter(r => r.is_selected).length}</strong> of{' '}
-          <strong className="text-slate-800">{rules.length}</strong> active rules selected for future scans
+        <div className="text-slate-500">
+          <span className="font-medium text-slate-800">{rules.filter(r => r.is_selected).length}</span> of{' '}
+          <span className="font-medium text-slate-800">{rules.length}</span> active rules selected
         </div>
       </div>
 
       {/* Rules List */}
-      <div className="space-y-4">
+      <div className="space-y-3">
         {filteredRules.map(rule => (
-          <Card
+          <div
             key={rule.id}
-            className={`transition-all ${
+            className={`rounded-lg border p-4 transition-colors text-xs ${
               rule.is_selected
-                ? 'border-indigo-300 bg-white shadow-xs'
+                ? 'border-slate-200 bg-white hover:border-slate-300'
                 : 'border-slate-200 bg-slate-50/70 opacity-80'
             }`}
           >
-            <CardContent className="p-5 space-y-4">
+            <div className="space-y-3">
               {/* Header: Rule Code, Type, Jurisdiction, Toggle */}
-              <div className="flex flex-wrap items-start justify-between gap-3 pb-3 border-b border-slate-100">
+              <div className="flex flex-wrap items-center justify-between gap-2.5 pb-2.5 border-b border-slate-100">
                 <div className="flex items-center gap-2 flex-wrap">
-                  <span className="font-mono text-xs font-bold text-indigo-900 bg-indigo-100 px-2.5 py-1 rounded">
+                  <span className="font-mono text-xs font-medium text-slate-800">
                     {rule.rule_code}
                   </span>
                   <RuleTypeBadge type={rule.binding_type} />
-                  <span className="text-xs font-semibold text-slate-600 bg-slate-100 px-2.5 py-1 rounded-full">
+                  <span className="text-slate-400">·</span>
+                  <span className="text-slate-500">
                     {rule.source?.jurisdiction}
                   </span>
-                  <span className="text-xs text-slate-400 font-medium">
-                    Category: {getCategoryLabel(rule.category)}
+                  <span className="text-slate-400">·</span>
+                  <span className="text-slate-500">
+                    {getCategoryLabel(rule.category)}
                   </span>
                 </div>
 
                 <Button
-                  variant={rule.is_selected ? 'primary' : 'outline'}
+                  variant={rule.is_selected ? 'secondary' : 'outline'}
                   size="sm"
                   onClick={() => handleToggleRule(rule.id)}
-                  className={`text-xs ${
-                    rule.is_selected ? 'bg-indigo-600 hover:bg-indigo-700' : ''
-                  }`}
+                  className="text-xs"
                 >
-                  {rule.is_selected ? 'Included in Default Scan' : 'Excluded from Scan'}
+                  {rule.is_selected ? 'Included in scan' : 'Excluded from scan'}
                 </Button>
               </div>
 
               {/* Rule Statement */}
               <div>
-                <h4 className="text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">
-                  Rule Requirement
-                </h4>
-                <p className="text-sm font-semibold text-slate-900 leading-snug">
+                <p className="text-sm font-medium text-slate-900 leading-snug">
                   {rule.rule_text}
+                </p>
+                <p className="text-slate-600 mt-1">
+                  <span className="text-slate-700 font-medium">Scope:</span> {rule.applicability_notes}
                 </p>
               </div>
 
-              {/* Applicability Notes */}
-              <div className="rounded-lg bg-slate-50 p-3 border border-slate-100 text-xs text-slate-600">
-                <span className="font-bold text-slate-800">Scope of Application: </span>
-                {rule.applicability_notes}
-              </div>
-
               {/* Official Source & Verification Metadata */}
-              <div className="flex flex-wrap items-center justify-between gap-3 pt-2 border-t border-slate-100 text-xs text-slate-500">
-                <div className="flex items-center gap-3">
+              <div className="flex flex-wrap items-center justify-between gap-2 pt-2 border-t border-slate-100 text-slate-500 text-[11px]">
+                <div className="flex items-center gap-2">
                   <span>
-                    Source: <strong>{rule.source?.title}</strong> ({rule.source?.publisher})
+                    Source: {rule.source?.title} ({rule.source?.publisher})
                   </span>
                   {rule.source?.official_url && (
                     <a
                       href={rule.source.official_url}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="inline-flex items-center gap-1 text-blue-600 hover:text-blue-700 font-semibold underline"
+                      className="inline-flex items-center gap-1 text-slate-600 hover:text-slate-900 font-medium"
                     >
-                      <span>Official Statute</span>
+                      <span>Statute</span>
                       <ExternalLink className="w-3 h-3" />
                     </a>
                   )}
                 </div>
 
-                <div className="flex items-center gap-3 text-[11px] text-slate-400 font-mono">
-                  <span>Effective: {rule.source?.effective_date}</span>
-                  <span>•</span>
-                  <span className="text-emerald-700 font-semibold flex items-center gap-1">
+                <div className="flex items-center gap-2 text-slate-400">
+                  <span>Effective {rule.source?.effective_date}</span>
+                  <span>·</span>
+                  <span className="text-emerald-700 font-medium flex items-center gap-1">
                     <CheckCircle2 className="w-3 h-3 text-emerald-600" />
                     Verified {rule.source?.last_verified_at}
                   </span>
                 </div>
               </div>
-            </CardContent>
-          </Card>
+            </div>
+          </div>
         ))}
       </div>
+
     </div>
   );
 }

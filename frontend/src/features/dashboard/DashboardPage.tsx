@@ -7,7 +7,6 @@ import {
   Plus,
   ArrowRight,
   FileCheck,
-  Sparkles,
 } from 'lucide-react';
 
 import {
@@ -22,7 +21,6 @@ import {
 import { PageHeader } from '../../components/layout/PageHeader';
 import { StatCard } from '../../components/ui/StatCard';
 import { Button } from '../../components/ui/Button';
-import { Card, CardHeader, CardTitle, CardContent } from '../../components/ui/Card';
 import { RiskBadge } from '../../components/ui/RiskBadge';
 import { ContractTable } from '../contracts/ContractTable';
 import { demoStore } from '../../mocks/demo-store';
@@ -136,60 +134,51 @@ export function DashboardPage() {
       ) : (
         <>
           {/* Top 4 Stat Cards */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5">
             <StatCard
-              title="Total Contracts"
+              title="Total contracts"
               value={totalContracts}
-              subtitle="Stored securely in private storage"
-              icon={<FileText className="w-5 h-5 text-blue-600" />}
-              iconBgColor="bg-blue-50 text-blue-600"
+              subtitle="Encrypted local storage"
+              icon={<FileText className="w-4 h-4 text-slate-400" />}
               onClick={() => navigate('/contracts')}
             />
 
             <StatCard
-              title="Analyses Completed"
+              title="Analyses completed"
               value={totalAnalyses}
               subtitle="Evidence-verified scans"
-              icon={<FileCheck className="w-5 h-5 text-emerald-600" />}
-              iconBgColor="bg-emerald-50 text-emerald-600"
+              icon={<FileCheck className="w-4 h-4 text-slate-400" />}
               onClick={() => navigate('/history')}
             />
 
             <StatCard
-              title="High-Risk Flags"
+              title="High-risk findings"
               value={highRiskCount}
-              subtitle="Breaches of policies or laws"
-              icon={<AlertTriangle className="w-5 h-5 text-red-600" />}
-              iconBgColor="bg-red-50 text-red-600"
-              trendText="Requires priority attention"
+              subtitle="Requires review"
+              icon={<AlertTriangle className="w-4 h-4 text-red-600" />}
+              trendText="High priority"
               trendType="negative"
             />
 
             <StatCard
-              title="Pending Human Reviews"
+              title="Pending review"
               value={pendingReviewCount}
-              subtitle="Awaiting manual review"
-              icon={<Clock className="w-5 h-5 text-amber-600" />}
-              iconBgColor="bg-amber-50 text-amber-600"
-              trendText="Human review needed"
+              subtitle="Unreviewed clauses"
+              icon={<Clock className="w-4 h-4 text-amber-700" />}
+              trendText="Awaiting action"
               trendType="neutral"
             />
           </div>
 
-          {/* Quick Notice Banner */}
-          <div className="flex items-center justify-between rounded-xl border border-blue-200 bg-gradient-to-r from-blue-50/70 via-indigo-50/40 to-slate-50 p-4">
-            <div className="flex items-center gap-3">
-              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-blue-600 text-white shadow-xs">
-                <Sparkles className="w-5 h-5" />
-              </div>
-              <div>
-                <h4 className="text-sm font-semibold text-slate-900">
-                  Ready to test with a realistic agreement?
-                </h4>
-                <p className="text-xs text-slate-600">
-                  Try our built-in <strong>Apex Enterprises MSA</strong> sample to observe Net-90 payment detection and uncapped liability warnings.
-                </p>
-              </div>
+          {/* Quick Notice Banner: Simple, quiet border banner */}
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 rounded-lg border border-slate-200 bg-white p-3.5 text-xs">
+            <div>
+              <span className="font-medium text-slate-900">
+                Sample contract available: Apex Enterprises MSA
+              </span>
+              <p className="text-slate-500 mt-0.5">
+                Inspect simulated findings including Net-90 payment terms and uncapped liability clauses.
+              </p>
             </div>
 
             <Button
@@ -197,127 +186,122 @@ export function DashboardPage() {
               size="sm"
               onClick={() => navigate('/analyses/anl_apex_001')}
               rightIcon={<ArrowRight className="w-3.5 h-3.5" />}
-              className="hidden sm:inline-flex shrink-0 bg-white"
+              className="self-start sm:self-auto shrink-0 text-xs"
             >
-              View Sample Findings
+              View sample findings
             </Button>
           </div>
 
           {/* Risk Chart & Recent Analysis Activity Grid */}
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
             {/* Risk Distribution Chart */}
-            <Card className="lg:col-span-1 flex flex-col justify-between">
-              <CardHeader>
-                <CardTitle>Risk Finding Distribution</CardTitle>
-                <p className="text-xs text-slate-500">
-                  Aggregated clause flags across all analyzed documents
+            <div className="lg:col-span-1 rounded-lg border border-slate-200 bg-white p-4 flex flex-col justify-between">
+              <div>
+                <h3 className="text-xs font-semibold uppercase tracking-wider text-slate-500">
+                  Risk Distribution
+                </h3>
+                <p className="text-xs text-slate-500 mt-0.5">
+                  Flagged clauses across all contracts
                 </p>
-              </CardHeader>
-              <CardContent className="h-64 pt-2">
+              </div>
+              <div className="h-56 pt-2">
                 <ResponsiveContainer width="100%" height="100%">
                   <BarChart
                     data={riskChartData}
-                    margin={{ top: 10, right: 10, left: -20, bottom: 0 }}
+                    margin={{ top: 10, right: 10, left: -25, bottom: 0 }}
                   >
                     <XAxis
                       dataKey="name"
                       tick={{ fontSize: 11, fill: '#64748b' }}
-                      axisLine={{ stroke: '#cbd5e1' }}
+                      axisLine={{ stroke: '#e2e8f0' }}
                       tickLine={false}
                     />
                     <YAxis
                       tick={{ fontSize: 11, fill: '#64748b' }}
-                      axisLine={{ stroke: '#cbd5e1' }}
+                      axisLine={{ stroke: '#e2e8f0' }}
                       tickLine={false}
                     />
                     <Tooltip
                       contentStyle={{
-                        borderRadius: '8px',
+                        borderRadius: '6px',
                         border: '1px solid #e2e8f0',
                         fontSize: '12px',
+                        boxShadow: 'none',
                       }}
                     />
-                    <Bar dataKey="count" radius={[6, 6, 0, 0]} maxBarSize={45}>
+                    <Bar dataKey="count" radius={[4, 4, 0, 0]} maxBarSize={40}>
                       {riskChartData.map((entry, index) => (
                         <Cell key={`cell-${index}`} fill={entry.color} />
                       ))}
                     </Bar>
                   </BarChart>
                 </ResponsiveContainer>
-              </CardContent>
-            </Card>
+              </div>
+            </div>
 
             {/* Recent Analysis Activity */}
-            <Card className="lg:col-span-2">
-              <CardHeader className="flex flex-row items-center justify-between">
+            <div className="lg:col-span-2 rounded-lg border border-slate-200 bg-white p-4">
+              <div className="flex items-center justify-between pb-3 border-b border-slate-100">
                 <div>
-                  <CardTitle>Recent Contract Analyses</CardTitle>
-                  <p className="text-xs text-slate-500">
-                    Latest clause scans performed by ClauseLens
+                  <h3 className="text-xs font-semibold uppercase tracking-wider text-slate-500">
+                    Recent Contract Analyses
+                  </h3>
+                  <p className="text-xs text-slate-500 mt-0.5">
+                    Latest evaluations performed by ClauseLens
                   </p>
                 </div>
                 <Button
                   variant="ghost"
                   size="sm"
                   onClick={() => navigate('/history')}
-                  className="text-xs text-blue-600 hover:text-blue-700"
+                  className="text-xs text-slate-600 hover:text-slate-900"
                 >
-                  View All History
+                  View all →
                 </Button>
-              </CardHeader>
-              <CardContent className="space-y-3">
+              </div>
+
+              <div className="divide-y divide-slate-100">
                 {analyses.map(analysis => (
                   <div
                     key={analysis.id}
                     onClick={() => navigate(`/analyses/${analysis.id}`)}
-                    className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-3.5 rounded-xl border border-slate-100 hover:border-slate-200 hover:bg-slate-50 transition-all cursor-pointer group"
+                    className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 py-3 hover:bg-slate-50/70 transition-colors cursor-pointer px-1 rounded"
                   >
-                    <div className="flex items-start gap-3 min-w-0">
-                      <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-blue-50 text-blue-600 group-hover:bg-blue-100 transition-colors">
-                        <FileText className="w-5 h-5" />
-                      </div>
-                      <div className="min-w-0">
-                        <h4 className="text-xs font-bold text-slate-900 group-hover:text-blue-600 transition-colors truncate">
-                          {analysis.contract_name}
-                        </h4>
-                        <p className="text-[11px] text-slate-500 mt-0.5 line-clamp-1">
-                          {analysis.summary}
-                        </p>
-                        <span className="text-[10px] text-slate-400 mt-1 block">
-                          Completed {formatShortDate(analysis.created_at)} •{' '}
-                          {analysis.model_name}
-                        </span>
-                      </div>
+                    <div className="min-w-0">
+                      <h4 className="text-xs font-medium text-slate-900 hover:text-blue-600 transition-colors truncate">
+                        {analysis.contract_name}
+                      </h4>
+                      <p className="text-[11px] text-slate-500 mt-0.5 line-clamp-1">
+                        {analysis.summary}
+                      </p>
+                      <span className="text-[10px] text-slate-400 mt-0.5 block">
+                        Completed {formatShortDate(analysis.created_at)} · {analysis.model_name}
+                      </span>
                     </div>
 
-                    <div className="flex items-center gap-3 shrink-0 self-end sm:self-center">
+                    <div className="flex items-center gap-2.5 shrink-0 self-end sm:self-center text-xs">
                       <RiskBadge
                         severity={analysis.overall_risk_level}
                         size="sm"
                       />
-                      <div className="text-right">
-                        <span className="text-xs font-bold text-slate-800">
-                          {analysis.findings_count.total} findings
-                        </span>
-                        <span className="block text-[10px] text-red-600 font-semibold">
-                          {analysis.findings_count.high} high risk
-                        </span>
-                      </div>
+                      <span className="text-slate-500 text-[11px]">
+                        {analysis.findings_count.total} findings
+                      </span>
                     </div>
                   </div>
                 ))}
-              </CardContent>
-            </Card>
+              </div>
+            </div>
           </div>
 
           {/* Recent Contracts Section */}
-          <div className="space-y-3">
+          <div className="space-y-3 pt-2">
             <div className="flex items-center justify-between">
               <div>
-                <h3 className="text-base font-bold text-slate-900">
+                <h3 className="text-xs font-semibold uppercase tracking-wider text-slate-500">
                   Uploaded Contracts
                 </h3>
-                <p className="text-xs text-slate-500">
+                <p className="text-xs text-slate-500 mt-0.5">
                   Contracts undergoing extraction, integrity checks, and clause evaluation
                 </p>
               </div>
@@ -327,9 +311,10 @@ export function DashboardPage() {
                 onClick={() => navigate('/contracts')}
                 className="text-xs"
               >
-                Manage All Contracts ({contracts.length})
+                Manage contracts ({contracts.length})
               </Button>
             </div>
+
 
             <ContractTable
               contracts={contracts}

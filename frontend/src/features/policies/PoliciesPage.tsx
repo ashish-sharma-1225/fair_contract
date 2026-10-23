@@ -3,19 +3,17 @@ import {
   Plus,
   Trash2,
   Edit2,
-  Sparkles,
   ToggleLeft,
   ToggleRight,
 } from 'lucide-react';
 
 import { PageHeader } from '../../components/layout/PageHeader';
 import { Button } from '../../components/ui/Button';
-import { Card, CardHeader, CardTitle, CardContent } from '../../components/ui/Card';
 import { PolicyForm } from '../../components/forms/PolicyForm';
 import { ConfirmDialog } from '../../components/ui/ConfirmDialog';
 import { RiskBadge } from '../../components/ui/RiskBadge';
 import { demoStore } from '../../mocks/demo-store';
-import { getCategoryBadgeClasses, getCategoryLabel, formatShortDate } from '../../lib/utils';
+import { getCategoryLabel, formatShortDate } from '../../lib/utils';
 import type { Policy } from '../../types';
 import type { PolicyFormData } from '../../lib/validation';
 
@@ -126,13 +124,10 @@ export function PoliciesPage() {
       />
 
       {/* Preset Suggestions Bar */}
-      <div className="rounded-xl border border-blue-200 bg-blue-50/50 p-4">
-        <div className="flex items-center gap-2 mb-2">
-          <Sparkles className="w-4 h-4 text-blue-600" />
-          <h4 className="text-xs font-semibold uppercase tracking-wider text-slate-800">
-            Recommended Policy Presets for Freelancers
-          </h4>
-        </div>
+      <div className="rounded-lg border border-slate-200 bg-white p-3.5 text-xs">
+        <h3 className="font-medium text-slate-800 mb-1.5">
+          Standard Policy Presets
+        </h3>
         <div className="flex flex-wrap gap-2">
           <Button
             variant="outline"
@@ -147,9 +142,9 @@ export function PoliciesPage() {
                 rule_config: { liability_cap_percent: 100 },
               })
             }
-            className="text-xs bg-white hover:bg-blue-50"
+            className="text-xs"
           >
-            + Add: 100% Fee Liability Cap
+            + 100% Fee liability cap
           </Button>
 
           <Button
@@ -165,9 +160,9 @@ export function PoliciesPage() {
                 rule_config: { max_payment_days: 30 },
               })
             }
-            className="text-xs bg-white hover:bg-blue-50"
+            className="text-xs"
           >
-            + Add: Net-30 Payment Window
+            + Net-30 Payment window
           </Button>
 
           <Button
@@ -183,62 +178,57 @@ export function PoliciesPage() {
                 rule_config: { min_cancellation_notice_days: 60 },
               })
             }
-            className="text-xs bg-white hover:bg-blue-50"
+            className="text-xs"
           >
-            + Add: Auto-Renewal Safeguard
+            + Auto-renewal safeguard
           </Button>
         </div>
       </div>
 
       {/* Policy Form Modal / Inline Box */}
       {isFormOpen && (
-        <Card className="border-blue-400 shadow-md">
-          <CardHeader>
-            <CardTitle>
+        <div className="rounded-lg border border-slate-200 bg-white p-5 space-y-4">
+          <div className="border-b border-slate-100 pb-3">
+            <h3 className="text-sm font-semibold text-slate-900">
               {editingPolicy ? 'Edit Business Policy' : 'Create New Business Policy'}
-            </CardTitle>
-            <p className="text-xs text-slate-500">
+            </h3>
+            <p className="text-xs text-slate-500 mt-0.5">
               Define the conditions that should trigger an alert during contract review.
             </p>
-          </CardHeader>
-          <CardContent>
-            <PolicyForm
-              initialData={editingPolicy}
-              onSubmit={handleSavePolicy}
-              onCancel={() => {
-                setIsFormOpen(false);
-                setEditingPolicy(null);
-              }}
-            />
-          </CardContent>
-        </Card>
+          </div>
+          <PolicyForm
+            initialData={editingPolicy}
+            onSubmit={handleSavePolicy}
+            onCancel={() => {
+              setIsFormOpen(false);
+              setEditingPolicy(null);
+            }}
+          />
+        </div>
       )}
 
       {/* Policy List */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-3.5">
         {policies.map(policy => (
-          <Card
+          <div
             key={policy.id}
-            className={`transition-all ${
+            className={`rounded-lg border p-4 transition-colors text-xs ${
               policy.is_enabled
                 ? 'border-slate-200 bg-white hover:border-slate-300'
-                : 'border-slate-200 bg-slate-50/70 opacity-70'
+                : 'border-slate-200 bg-slate-50/70 opacity-75'
             }`}
           >
-            <CardContent className="p-5 space-y-3">
+            <div className="space-y-2.5">
               <div className="flex items-start justify-between gap-3">
                 <div>
-                  <div className="flex items-center gap-2 flex-wrap">
-                    <span
-                      className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold border ${getCategoryBadgeClasses(
-                        policy.category
-                      )}`}
-                    >
+                  <div className="flex items-center gap-1.5 flex-wrap">
+                    <RiskBadge severity={policy.severity} size="sm" />
+                    <span className="text-slate-400">·</span>
+                    <span className="text-slate-600 font-medium">
                       {getCategoryLabel(policy.category)}
                     </span>
-                    <RiskBadge severity={policy.severity} size="sm" />
                   </div>
-                  <h4 className="text-sm font-bold text-slate-900 mt-2">
+                  <h4 className="text-sm font-semibold text-slate-900 mt-1.5">
                     {policy.name}
                   </h4>
                 </div>
@@ -247,46 +237,47 @@ export function PoliciesPage() {
                 <button
                   type="button"
                   onClick={() => handleToggleEnabled(policy)}
-                  className={`p-1 rounded-lg transition-colors cursor-pointer ${
+                  className={`p-0.5 rounded transition-colors cursor-pointer ${
                     policy.is_enabled
-                      ? 'text-blue-600 hover:text-blue-700'
+                      ? 'text-slate-700 hover:text-slate-900'
                       : 'text-slate-400 hover:text-slate-600'
                   }`}
-                  title={policy.is_enabled ? 'Disable Policy' : 'Enable Policy'}
+                  title={policy.is_enabled ? 'Disable policy' : 'Enable policy'}
+                  aria-label={policy.is_enabled ? 'Disable policy' : 'Enable policy'}
                 >
                   {policy.is_enabled ? (
-                    <ToggleRight className="w-7 h-7" />
+                    <ToggleRight className="w-6 h-6 text-slate-800" />
                   ) : (
-                    <ToggleLeft className="w-7 h-7" />
+                    <ToggleLeft className="w-6 h-6 text-slate-400" />
                   )}
                 </button>
               </div>
 
               {/* Natural language rule description */}
-              <p className="text-xs text-slate-600 leading-relaxed">
+              <p className="text-slate-600 leading-relaxed">
                 {policy.rule_text}
               </p>
 
-              {/* Structured values pill */}
+              {/* Structured values */}
               {policy.rule_config && Object.keys(policy.rule_config).length > 0 && (
-                <div className="flex flex-wrap gap-2 pt-2 border-t border-slate-100">
+                <div className="flex flex-wrap gap-1.5 pt-2 border-t border-slate-100 text-[11px] text-slate-600">
                   {policy.rule_config.max_payment_days && (
-                    <span className="text-[11px] font-mono text-slate-700 bg-slate-100 px-2 py-0.5 rounded">
+                    <span className="font-mono bg-slate-100 px-1.5 py-0.5 rounded">
                       Limit: Net-{policy.rule_config.max_payment_days}
                     </span>
                   )}
                   {policy.rule_config.min_cancellation_notice_days && (
-                    <span className="text-[11px] font-mono text-slate-700 bg-slate-100 px-2 py-0.5 rounded">
-                      Min Notice: {policy.rule_config.min_cancellation_notice_days} days
+                    <span className="font-mono bg-slate-100 px-1.5 py-0.5 rounded">
+                      Notice: {policy.rule_config.min_cancellation_notice_days}d
                     </span>
                   )}
                   {policy.rule_config.liability_cap_percent && (
-                    <span className="text-[11px] font-mono text-slate-700 bg-slate-100 px-2 py-0.5 rounded">
-                      Cap: {policy.rule_config.liability_cap_percent}% of fees
+                    <span className="font-mono bg-slate-100 px-1.5 py-0.5 rounded">
+                      Cap: {policy.rule_config.liability_cap_percent}%
                     </span>
                   )}
                   {policy.rule_config.preferred_jurisdiction && (
-                    <span className="text-[11px] font-mono text-slate-700 bg-slate-100 px-2 py-0.5 rounded truncate max-w-xs">
+                    <span className="font-mono bg-slate-100 px-1.5 py-0.5 rounded truncate max-w-xs">
                       Venue: {policy.rule_config.preferred_jurisdiction}
                     </span>
                   )}
@@ -294,7 +285,7 @@ export function PoliciesPage() {
               )}
 
               {/* Card Footer Actions */}
-              <div className="flex items-center justify-between pt-3 border-t border-slate-100 text-[11px] text-slate-400">
+              <div className="flex items-center justify-between pt-2.5 border-t border-slate-100 text-[11px] text-slate-400">
                 <span>Updated {formatShortDate(policy.updated_at)}</span>
 
                 <div className="flex items-center gap-1">
@@ -304,25 +295,26 @@ export function PoliciesPage() {
                       setEditingPolicy(policy);
                       setIsFormOpen(true);
                     }}
-                    className="p-1.5 text-slate-500 hover:text-blue-600 hover:bg-slate-100 rounded transition-colors"
-                    title="Edit Policy"
+                    className="p-1 text-slate-400 hover:text-slate-700 rounded transition-colors"
+                    title="Edit policy"
                   >
                     <Edit2 className="w-3.5 h-3.5" />
                   </button>
                   <button
                     type="button"
                     onClick={() => setDeletingPolicyId(policy.id)}
-                    className="p-1.5 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded transition-colors"
-                    title="Delete Policy"
+                    className="p-1 text-slate-400 hover:text-red-700 rounded transition-colors"
+                    title="Delete policy"
                   >
                     <Trash2 className="w-3.5 h-3.5" />
                   </button>
                 </div>
               </div>
-            </CardContent>
-          </Card>
+            </div>
+          </div>
         ))}
       </div>
+
 
       {/* Delete Dialog */}
       <ConfirmDialog

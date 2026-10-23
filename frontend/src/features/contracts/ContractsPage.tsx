@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Plus, Search, Filter, FileText } from 'lucide-react';
+import { Plus, Search, FileText } from 'lucide-react';
 import { PageHeader } from '../../components/layout/PageHeader';
 import { Button } from '../../components/ui/Button';
 import { ContractTable } from './ContractTable';
@@ -49,35 +49,37 @@ export function ContractsPage() {
         }
       />
 
-      {/* Search and Filters */}
-      <div className="flex flex-col sm:flex-row gap-3 items-stretch sm:items-center justify-between rounded-xl border border-slate-200 bg-white p-4 shadow-xs">
-        <div className="relative flex-1">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+      {/* Search and Filters Toolbar */}
+      <div className="flex flex-col sm:flex-row gap-2.5 items-stretch sm:items-center justify-between py-1">
+        <div className="relative flex-1 max-w-sm">
+          <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-400" />
           <input
             type="text"
+            aria-label="Search contracts"
             placeholder="Search contracts by name..."
             value={searchQuery}
             onChange={e => setSearchQuery(e.target.value)}
-            className="w-full pl-9 pr-3 py-2 text-xs rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+            className="w-full h-8 pl-8 pr-2.5 text-xs rounded border border-slate-200 focus:outline-none focus:border-slate-400 bg-white text-slate-800 placeholder-slate-400"
           />
         </div>
 
         <div className="flex items-center gap-2">
-          <Filter className="w-3.5 h-3.5 text-slate-400" />
           <select
+            aria-label="Filter status"
             value={statusFilter}
             onChange={e =>
               setStatusFilter(e.target.value as ContractStatus | 'all')
             }
-            className="rounded-lg border border-slate-300 bg-white py-1.5 px-3 text-xs font-medium text-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer"
+            className="h-8 rounded border border-slate-200 bg-white px-2.5 text-xs font-normal text-slate-700 hover:border-slate-300 focus:outline-none focus:border-slate-400 cursor-pointer"
           >
-            <option value="all">All Statuses</option>
+            <option value="all">All statuses</option>
             <option value="analyzed">Analyzed</option>
             <option value="extracted">Extracted</option>
             <option value="uploaded">Uploaded</option>
           </select>
         </div>
       </div>
+
 
       {/* Contracts Table or Empty State */}
       {filteredContracts.length === 0 ? (

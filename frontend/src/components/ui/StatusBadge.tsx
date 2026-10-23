@@ -1,5 +1,4 @@
 import { cn } from '../../lib/utils';
-
 import type { BindingType, ContractStatus, ReviewStatus } from '../../types';
 
 export function StatusBadge({
@@ -11,18 +10,18 @@ export function StatusBadge({
 }) {
   const styles: Record<ContractStatus, { label: string; classes: string }> = {
     uploaded: { label: 'Uploaded', classes: 'bg-slate-100 text-slate-700 border-slate-200' },
-    extracted: { label: 'Text Extracted', classes: 'bg-blue-50 text-blue-700 border-blue-200' },
-    analyzing: { label: 'Analyzing...', classes: 'bg-indigo-50 text-indigo-700 border-indigo-200 animate-pulse' },
-    analyzed: { label: 'Analyzed', classes: 'bg-emerald-50 text-emerald-700 border-emerald-200' },
+    extracted: { label: 'Text extracted', classes: 'bg-slate-100 text-slate-700 border-slate-200' },
+    analyzing: { label: 'Analyzing', classes: 'bg-blue-50 text-blue-700 border-blue-200' },
+    analyzed: { label: 'Analyzed', classes: 'bg-emerald-50 text-emerald-800 border-emerald-200' },
     failed: { label: 'Failed', classes: 'bg-red-50 text-red-700 border-red-200' },
   };
 
-  const current = styles[status] || { label: status, classes: 'bg-slate-100 text-slate-700' };
+  const current = styles[status] || { label: status, classes: 'bg-slate-100 text-slate-700 border-slate-200' };
 
   return (
     <span
       className={cn(
-        'inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium border',
+        'inline-flex items-center px-2 py-0.5 rounded text-xs font-medium border',
         current.classes,
         className
       )}
@@ -41,7 +40,7 @@ export function ReviewStatusBadge({
 }) {
   const styles: Record<ReviewStatus, { label: string; classes: string }> = {
     needs_review: {
-      label: 'Needs Review',
+      label: 'Needs review',
       classes: 'bg-amber-50 text-amber-800 border-amber-200',
     },
     reviewed: {
@@ -59,7 +58,7 @@ export function ReviewStatusBadge({
   return (
     <span
       className={cn(
-        'inline-flex items-center px-2.5 py-0.5 rounded-md text-xs font-medium border',
+        'inline-flex items-center px-2 py-0.5 rounded text-xs font-medium border',
         current.classes,
         className
       )}
@@ -78,25 +77,25 @@ export function RuleTypeBadge({
 }) {
   const styles: Record<BindingType, { label: string; classes: string }> = {
     binding_law: {
-      label: 'Binding Statutory Law',
-      classes: 'bg-indigo-50 text-indigo-700 border-indigo-200 font-semibold',
+      label: 'Statutory law',
+      classes: 'bg-slate-100 text-slate-700 border-slate-200',
     },
     official_guidance: {
-      label: 'Official Guidance',
-      classes: 'bg-cyan-50 text-cyan-700 border-cyan-200',
+      label: 'Official guidance',
+      classes: 'bg-slate-100 text-slate-700 border-slate-200',
     },
     standard: {
-      label: 'Industry Standard',
-      classes: 'bg-slate-100 text-slate-700 border-slate-200',
+      label: 'Industry standard',
+      classes: 'bg-slate-50 text-slate-600 border-slate-200',
     },
   };
 
-  const current = styles[type] || { label: type, classes: 'bg-slate-100' };
+  const current = styles[type] || { label: type, classes: 'bg-slate-100 border-slate-200 text-slate-700' };
 
   return (
     <span
       className={cn(
-        'inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium border',
+        'inline-flex items-center px-2 py-0.5 rounded text-xs font-normal border',
         current.classes,
         className
       )}
@@ -105,3 +104,4 @@ export function RuleTypeBadge({
     </span>
   );
 }
+
