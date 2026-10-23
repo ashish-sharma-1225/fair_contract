@@ -1,6 +1,6 @@
-import { useState, useMemo } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
-import { Printer, Info, Filter } from 'lucide-react';
+import { Printer, Info, Filter, RefreshCw } from 'lucide-react';
 import { PageHeader } from '../../components/layout/PageHeader';
 import { Button } from '../../components/ui/Button';
 import { RiskBadge } from '../../components/ui/RiskBadge';
@@ -11,13 +11,18 @@ import {
 } from '../../components/findings/FindingsFilter';
 import { FindingDetailDrawer } from '../../components/findings/FindingDetailDrawer';
 import { ErrorState } from '../../components/ui/ErrorState';
-import { demoStore } from '../../mocks/demo-store';
+import { LoadingState } from '../../components/ui/LoadingState';
+import { apiClient } from '../../lib/api-client';
 import { formatShortDate } from '../../lib/utils';
-import type { Finding, ReviewStatus } from '../../types';
+import type { Analysis, Finding, ReviewStatus } from '../../types';
 
 export function AnalysisResultsPage() {
   const { analysisId } = useParams<{ analysisId: string }>();
   const navigate = useNavigate();
+
+  const [analysis, setAnalysis] = useState<Analysis | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   const [selectedFinding, setSelectedFinding] = useState<Finding | null>(null);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
@@ -31,36 +36,42 @@ export function AnalysisResultsPage() {
     sourceType: 'all',
   });
 
-  // Re-fetch analysis from demoStore
-  const analysis = useMemo(() => {
-    if (!analysisId) return undefined;
-    return demoStore.getAnalysis(analysisId);
+  const fetchAnalysis = useCallback(async () => {
+    if (!analysisId) return;
+    setIsLoading(true);
+    setError(null);
+    try {
+      const data = await apiClient.getAnalysis(analysisId);
+      setAnalysis(data);
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : 'Failed to retrieve analysis report';
+      setError(msg);
+    } finally {
+      setIsLoading(false);
+    }
   }, [analysisId]);
 
-  if (!analysis) {
-    return (
-      <div className="space-y-6">
-        <PageHeader
-          title="Analysis Not Found"
-          backTo="/dashboard"
-          backLabel="Back to Dashboard"
-        />
-        <ErrorState
-          title="Analysis Record Unavailable"
-          message={`We could not locate an analysis report with ID "${analysisId}".`}
-          onRetry={() => navigate('/history')}
-        />
-      </div>
-    );
-  }
+  useEffect(() => {
+    fetchAnalysis();
+  }, [fetchAnalysis]);
 
-  const findings = analysis.findings || [];
-
-  const handleStatusChange = (findingId: string, newStatus: ReviewStatus) => {
-    if (!analysisId) return;
-    demoStore.updateFindingReview(analysisId, findingId, newStatus);
-    if (selectedFinding && selectedFinding.id === findingId) {
-      setSelectedFinding({ ...selectedFinding, review_status: newStatus });
+  const handleStatusChange = async (findingId: string, newStatus: ReviewStatus) => {
+    try {
+      await apiClient.updateFindingReview(findingId, newStatus);
+      setAnalysis(prev => {
+        if (!prev || !prev.findings) return prev;
+        return {
+          ...prev,
+          findings: prev.findings.map(f =>
+            f.id === findingId ? { ...f, review_status: newStatus } : f
+          ),
+        };
+      });
+      if (selectedFinding && selectedFinding.id === findingId) {
+        setSelectedFinding({ ...selectedFinding, review_status: newStatus });
+      }
+    } catch (err: unknown) {
+      console.error('Failed to update review status:', err);
     }
   };
 
@@ -72,6 +83,33 @@ export function AnalysisResultsPage() {
   const handleExportReport = () => {
     window.print();
   };
+
+  if (isLoading) {
+    return (
+      <div className="rounded-lg border border-slate-200 bg-white p-12">
+        <LoadingState message="Loading contract analysis findings..." />
+      </div>
+    );
+  }
+
+  if (error || !analysis) {
+    return (
+      <div className="space-y-6">
+        <PageHeader
+          title="Analysis Not Found"
+          backTo="/dashboard"
+          backLabel="Back to Dashboard"
+        />
+        <ErrorState
+          title="Analysis Record Unavailable"
+          message={error || `We could not locate an analysis report with ID "${analysisId}".`}
+          onRetry={fetchAnalysis}
+        />
+      </div>
+    );
+  }
+
+  const findings = analysis.findings || [];
 
   // Filter logic
   const filteredFindings = findings.filter(f => {
@@ -129,6 +167,15 @@ export function AnalysisResultsPage() {
             <Button
               variant="outline"
               size="sm"
+              onClick={fetchAnalysis}
+              leftIcon={<RefreshCw className="w-3.5 h-3.5" />}
+              className="text-xs"
+            >
+              Refresh
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
               onClick={handleExportReport}
               leftIcon={<Printer className="w-3.5 h-3.5" />}
               className="text-xs"
@@ -147,7 +194,7 @@ export function AnalysisResultsPage() {
         }
       />
 
-      {/* Contract Summary - Simple white section with subtle dividers */}
+      {/* Contract Summary Section */}
       <section className="rounded-lg border border-slate-200 bg-white p-4 space-y-3">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
           <div>
@@ -155,7 +202,7 @@ export function AnalysisResultsPage() {
               {analysis.contract_name}
             </h2>
             <p className="text-xs text-slate-500 mt-0.5">
-              Completed {formatShortDate(analysis.created_at)} · Evaluated against selected policies and rules
+              Completed {formatShortDate(analysis.created_at)} · {analysis.model_provider}
             </p>
           </div>
 
@@ -178,7 +225,7 @@ export function AnalysisResultsPage() {
         )}
       </section>
 
-      {/* Legal disclaimer: compact muted information notice */}
+      {/* Legal disclaimer */}
       <div className="flex items-center gap-2 rounded border border-slate-200 bg-slate-50 px-3 py-2 text-xs text-slate-600">
         <Info className="w-3.5 h-3.5 text-slate-400 shrink-0" />
         <span>
@@ -256,4 +303,3 @@ export function AnalysisResultsPage() {
     </div>
   );
 }
-

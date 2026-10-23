@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import {
   RefreshCw,
 } from 'lucide-react';
@@ -49,6 +49,11 @@ export function SettingsPage() {
       setIsTestingBackend(false);
     }
   };
+
+  // Auto test on mount
+  useEffect(() => {
+    handleTestBackend();
+  }, []);
 
   const handleResetDemoData = () => {
     demoStore.reset();

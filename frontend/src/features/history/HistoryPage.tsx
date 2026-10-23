@@ -1,20 +1,41 @@
-import { useState } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { History, Search, ArrowRight } from 'lucide-react';
+import { History, Search, ArrowRight, RefreshCw, AlertCircle } from 'lucide-react';
 import { PageHeader } from '../../components/layout/PageHeader';
 import { Button } from '../../components/ui/Button';
 import { RiskBadge } from '../../components/ui/RiskBadge';
 import { EmptyState } from '../../components/ui/EmptyState';
-import { demoStore } from '../../mocks/demo-store';
+import { LoadingState } from '../../components/ui/LoadingState';
+import { apiClient } from '../../lib/api-client';
 import { formatDate } from '../../lib/utils';
-import type { RiskSeverity } from '../../types';
+import type { Analysis, RiskSeverity } from '../../types';
 
 export function HistoryPage() {
   const navigate = useNavigate();
-  const [analyses] = useState(() => demoStore.getAnalyses());
+  const [analyses, setAnalyses] = useState<Analysis[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   const [searchQuery, setSearchQuery] = useState('');
   const [severityFilter, setSeverityFilter] = useState<RiskSeverity | 'all'>('all');
+
+  const fetchAnalyses = useCallback(async () => {
+    setIsLoading(true);
+    setError(null);
+    try {
+      const data = await apiClient.getAnalyses();
+      setAnalyses(data);
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : 'Failed to retrieve analysis history';
+      setError(msg);
+    } finally {
+      setIsLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    fetchAnalyses();
+  }, [fetchAnalyses]);
 
   const filteredAnalyses = analyses.filter(a => {
     if (searchQuery) {
@@ -34,15 +55,39 @@ export function HistoryPage() {
       <PageHeader
         title="Analysis History"
         actions={
-          <Button
-            variant="primary"
-            size="md"
-            onClick={() => navigate('/contracts/new')}
-          >
-            Analyse Contract
-          </Button>
+          <div className="flex items-center gap-2">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={fetchAnalyses}
+              leftIcon={<RefreshCw className={`w-3.5 h-3.5 ${isLoading ? 'animate-spin' : ''}`} />}
+              className="text-xs"
+            >
+              Refresh
+            </Button>
+            <Button
+              variant="primary"
+              size="md"
+              onClick={() => navigate('/contracts/new')}
+            >
+              Analyse Contract
+            </Button>
+          </div>
         }
       />
+
+      {/* Error Notice */}
+      {error && (
+        <div className="rounded-lg border border-red-200 bg-red-50 p-4 text-xs text-red-800 flex items-center justify-between gap-3">
+          <div className="flex items-center gap-2">
+            <AlertCircle className="w-4 h-4 text-red-600 shrink-0" />
+            <span>{error}</span>
+          </div>
+          <Button variant="outline" size="sm" onClick={fetchAnalyses} className="text-xs bg-white text-red-700 border-red-300">
+            Retry
+          </Button>
+        </div>
+      )}
 
       {/* Filter and Search Toolbar */}
       <div className="flex flex-col sm:flex-row gap-2.5 items-stretch sm:items-center justify-between py-1 text-xs">
@@ -74,7 +119,11 @@ export function HistoryPage() {
       </div>
 
       {/* History Items or Empty State */}
-      {filteredAnalyses.length === 0 ? (
+      {isLoading ? (
+        <div className="rounded-lg border border-slate-200 bg-white p-12">
+          <LoadingState message="Loading analysis history..." />
+        </div>
+      ) : filteredAnalyses.length === 0 ? (
         <EmptyState
           icon={<History className="w-7 h-7 text-slate-400" />}
           title="No analysis history found"
@@ -150,4 +199,3 @@ export function HistoryPage() {
     </div>
   );
 }
-

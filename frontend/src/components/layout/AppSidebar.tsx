@@ -91,18 +91,6 @@ export function AppSidebar({
           </button>
         </div>
 
-        {/* Demo Mode Notice - compact, muted */}
-        {!isCollapsed && (
-          <div className="mx-3 mt-3 rounded border border-slate-800 bg-slate-850 p-2 text-xs text-slate-400">
-            <span className="block font-medium text-slate-300 text-[11px]">
-              Interactive demo mode
-            </span>
-            <span className="block text-[11px] text-slate-500 mt-0.5 leading-snug">
-              Local simulation active.
-            </span>
-          </div>
-        )}
-
         {/* Nav Links */}
         <nav className="mt-3 space-y-0.5 px-2">
           {navItems.map(item => {

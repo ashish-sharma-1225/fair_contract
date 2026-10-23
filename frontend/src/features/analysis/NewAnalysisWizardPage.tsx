@@ -1,4 +1,4 @@
-import { useState, Fragment } from 'react';
+import { useState, useEffect, Fragment } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   CheckCircle2,
@@ -6,57 +6,76 @@ import {
   ArrowRight,
   ArrowLeft,
   Clock,
+  AlertCircle,
+  Loader2,
 } from 'lucide-react';
 import { PageHeader } from '../../components/layout/PageHeader';
 import { Button } from '../../components/ui/Button';
 import { FileDropzone } from '../../components/forms/FileDropzone';
 import { RuleTypeBadge } from '../../components/ui/StatusBadge';
-import { demoStore } from '../../mocks/demo-store';
-import { mockSampleContractText } from '../../mocks/demo-data';
+import { apiClient } from '../../lib/api-client';
 import { formatBytes, truncateHash } from '../../lib/utils';
-import type { Contract, Policy, RegulatoryRule } from '../../types';
+import type { Contract, ContractExtraction, Policy, RegulatoryRule } from '../../types';
 
 export function NewAnalysisWizardPage() {
   const navigate = useNavigate();
 
-  // Wizard state
+  // Wizard step state
   const [currentStep, setCurrentStep] = useState<number>(1);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [fileSha256, setFileSha256] = useState<string>('');
 
+  // Uploaded backend entities
+  const [uploadedContract, setUploadedContract] = useState<Contract | null>(null);
+  const [extraction, setExtraction] = useState<ContractExtraction | null>(null);
+  const [isUploading, setIsUploading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
   // Policies and Regulatory Rules selection
-  const [policies] = useState<Policy[]>(() =>
-    demoStore.getPolicies()
-  );
-  const [selectedPolicyIds, setSelectedPolicyIds] = useState<string[]>(() =>
-    demoStore.getPolicies().filter(p => p.is_enabled).map(p => p.id)
-  );
+  const [policies, setPolicies] = useState<Policy[]>([]);
+  const [selectedPolicyIds, setSelectedPolicyIds] = useState<string[]>([]);
+  const [regulatoryRules, setRegulatoryRules] = useState<RegulatoryRule[]>([]);
+  const [selectedRuleIds, setSelectedRuleIds] = useState<string[]>([]);
 
-  const [regulatoryRules] = useState<RegulatoryRule[]>(() =>
-    demoStore.getRegulatoryRules()
-  );
-  const [selectedRuleIds, setSelectedRuleIds] = useState<string[]>(() =>
-    demoStore.getRegulatoryRules().filter(r => r.is_selected).map(r => r.id)
-  );
-
-
-  // Analysis simulation state
+  // Analysis execution state
   const [analyzingStage, setAnalyzingStage] = useState<number>(0);
   const [progressPercent, setProgressPercent] = useState<number>(0);
-
-  // Extracted preview page index
   const [previewPageIndex, setPreviewPageIndex] = useState<number>(0);
+
+  // Load policies and rules on mount
+  useEffect(() => {
+    async function loadRulesAndPolicies() {
+      try {
+        const [fetchedPolicies, fetchedRules] = await Promise.all([
+          apiClient.getPolicies(),
+          apiClient.getRegulatoryRules(),
+        ]);
+        setPolicies(fetchedPolicies);
+        setSelectedPolicyIds(fetchedPolicies.filter(p => p.is_enabled).map(p => p.id));
+        setRegulatoryRules(fetchedRules);
+        setSelectedRuleIds(fetchedRules.filter(r => r.is_selected).map(r => r.id));
+      } catch (err: unknown) {
+        console.warn('Failed to pre-fetch rules from backend:', err);
+      }
+    }
+    loadRulesAndPolicies();
+  }, []);
 
   const handleFileSelect = (file: File, sha256: string) => {
     setSelectedFile(file);
     setFileSha256(sha256);
+    setUploadedContract(null);
+    setExtraction(null);
+    setError(null);
   };
 
   const handleClearFile = () => {
     setSelectedFile(null);
     setFileSha256('');
+    setUploadedContract(null);
+    setExtraction(null);
+    setError(null);
   };
-
 
   const togglePolicy = (id: string) => {
     setSelectedPolicyIds(prev =>
@@ -70,66 +89,80 @@ export function NewAnalysisWizardPage() {
     );
   };
 
-  // Run the realistic analysis simulation
-  const startAnalysis = () => {
+  // Step 1 -> Step 2: Upload PDF to backend and fetch text extraction
+  const handleProceedToPreview = async () => {
     if (!selectedFile) return;
 
-    setCurrentStep(5); // Go to progress screen
+    // If already uploaded and extracted, just advance
+    if (uploadedContract && extraction) {
+      setCurrentStep(2);
+      return;
+    }
+
+    setIsUploading(true);
+    setError(null);
+
+    try {
+      const contract = await apiClient.uploadContract(selectedFile);
+      setUploadedContract(contract);
+      setFileSha256(contract.sha256);
+
+      const contractExtraction = await apiClient.getContractExtraction(contract.id);
+      setExtraction(contractExtraction);
+      setCurrentStep(2);
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : 'Contract upload or text extraction failed';
+      setError(msg);
+    } finally {
+      setIsUploading(false);
+    }
+  };
+
+  // Step 4 -> Step 5: Execute analysis via backend
+  const startAnalysis = async () => {
+    if (!uploadedContract) return;
+
+    setCurrentStep(5);
     setAnalyzingStage(1);
-    setProgressPercent(15);
+    setProgressPercent(20);
+    setError(null);
 
-    // Step 1: Validating integrity
-    setTimeout(() => {
+    try {
+      // Stage 1: Validation
+      await new Promise(r => setTimeout(r, 400));
       setAnalyzingStage(2);
-      setProgressPercent(35);
+      setProgressPercent(40);
 
-      // Step 2: Extraction
+      // Stage 2: Matching
+      await new Promise(r => setTimeout(r, 400));
+      setAnalyzingStage(3);
+      setProgressPercent(60);
+
+      // Trigger backend analysis
+      const analysisPromise = apiClient.startAnalysis(uploadedContract.id, {
+        policy_ids: selectedPolicyIds,
+        regulatory_rule_ids: selectedRuleIds,
+      });
+
+      // Stage 3 & 4 visual progress
+      await new Promise(r => setTimeout(r, 400));
+      setAnalyzingStage(4);
+      setProgressPercent(80);
+
+      const analysis = await analysisPromise;
+
+      setAnalyzingStage(5);
+      setProgressPercent(100);
+
+      // Pause briefly for user to view 100% completion before navigating
       setTimeout(() => {
-        setAnalyzingStage(3);
-        setProgressPercent(60);
-
-        // Step 3: Rules matching
-        setTimeout(() => {
-          setAnalyzingStage(4);
-          setProgressPercent(85);
-
-          // Step 4: AI Analysis & Quote Verification
-          setTimeout(() => {
-            setAnalyzingStage(5);
-            setProgressPercent(100);
-
-            // Create contract entity
-            const contractId = `ctr_uploaded_${Date.now()}`;
-            const contractRecord: Contract = {
-              id: contractId,
-              owner_id: 'usr_demo_8829',
-              filename_original: selectedFile.name,
-              storage_key: `private_uploads/${contractId}.pdf`,
-              sha256:
-                fileSha256 ||
-                'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855',
-              mime_type: 'application/pdf',
-              size_bytes: selectedFile.size,
-              page_count: mockSampleContractText.page_count,
-              status: 'analyzing',
-              uploaded_at: new Date().toISOString(),
-              deleted_at: null,
-            };
-
-            const completedAnalysis = demoStore.createSimulatedAnalysis(
-              contractRecord,
-              selectedPolicyIds,
-              selectedRuleIds
-            );
-
-            // Redirect to results after brief completion pause
-            setTimeout(() => {
-              navigate(`/analyses/${completedAnalysis.id}`);
-            }, 800);
-          }, 1200);
-        }, 1000);
-      }, 1000);
-    }, 900);
+        navigate(`/analyses/${analysis.id}`);
+      }, 700);
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : 'Analysis processing failed';
+      setError(msg);
+      setAnalyzingStage(0);
+    }
   };
 
   const steps = [
@@ -200,6 +233,26 @@ export function NewAnalysisWizardPage() {
         </div>
       </div>
 
+      {/* Global Error Notice */}
+      {error && (
+        <div className="rounded-lg border border-red-200 bg-red-50 p-4 text-xs text-red-800 flex items-center justify-between gap-3">
+          <div className="flex items-center gap-2">
+            <AlertCircle className="w-4 h-4 text-red-600 shrink-0" />
+            <span>{error}</span>
+          </div>
+          {currentStep === 5 && (
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setCurrentStep(4)}
+              className="text-xs bg-white text-red-700 border-red-300"
+            >
+              Back to Review
+            </Button>
+          )}
+        </div>
+      )}
+
       {/* Step 1: Upload */}
       {currentStep === 1 && (
         <div className="rounded-lg border border-slate-200 bg-white p-5 space-y-4">
@@ -212,22 +265,33 @@ export function NewAnalysisWizardPage() {
             selectedFile={selectedFile}
             fileSha256={fileSha256}
             onClearFile={handleClearFile}
+            disabled={isUploading}
           />
 
           <div className="flex justify-between items-center pt-3 border-t border-slate-100">
             <span className="text-xs text-slate-500">
-              {selectedFile ? 'PDF selected' : 'Choose a file or select a sample'}
+              {isUploading
+                ? 'Uploading to backend and extracting pages...'
+                : selectedFile
+                ? 'PDF ready for analysis'
+                : 'Choose a file or select a sample agreement'}
             </span>
 
             <Button
               variant="primary"
               size="sm"
-              disabled={!selectedFile}
-              onClick={() => setCurrentStep(2)}
-              rightIcon={<ArrowRight className="w-3.5 h-3.5" />}
+              disabled={!selectedFile || isUploading}
+              onClick={handleProceedToPreview}
+              rightIcon={
+                isUploading ? (
+                  <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                ) : (
+                  <ArrowRight className="w-3.5 h-3.5" />
+                )
+              }
               className="text-xs"
             >
-              Continue
+              {isUploading ? 'Uploading...' : 'Continue'}
             </Button>
           </div>
         </div>
@@ -245,51 +309,53 @@ export function NewAnalysisWizardPage() {
             <div>
               <span className="text-slate-400 block text-[11px]">Filename</span>
               <span className="font-medium text-slate-800 truncate block">
-                {selectedFile?.name}
+                {uploadedContract?.filename_original || selectedFile?.name}
               </span>
             </div>
             <div>
               <span className="text-slate-400 block text-[11px]">Total Pages</span>
               <span className="font-medium text-slate-800">
-                {mockSampleContractText.page_count} pages
+                {extraction?.page_count || 1} pages
               </span>
             </div>
             <div>
               <span className="text-slate-400 block text-[11px]">Clauses Detected</span>
               <span className="font-medium text-slate-800">
-                18 clauses
+                {extraction?.pages.reduce((acc, p) => acc + p.clauses_count, 0) || 0} segments
               </span>
             </div>
             <div>
               <span className="text-slate-400 block text-[11px]">SHA-256</span>
-              <span className="font-mono text-slate-600 block truncate">
-                {truncateHash(fileSha256 || '9f86d081884c7d659a2feaa0c55ad015a3bf4f1b')}
+              <span className="font-mono text-slate-600 block truncate" title={fileSha256}>
+                {truncateHash(fileSha256 || uploadedContract?.sha256 || '')}
               </span>
             </div>
           </div>
 
           {/* Page navigation */}
-          <div className="flex items-center gap-1.5 overflow-x-auto pb-1 text-xs">
-            <span className="text-slate-500 mr-1">Pages:</span>
-            {mockSampleContractText.pages.map((p, idx) => (
-              <button
-                key={p.page_number}
-                type="button"
-                onClick={() => setPreviewPageIndex(idx)}
-                className={`px-2 py-0.5 rounded text-xs transition-colors ${
-                  previewPageIndex === idx
-                    ? 'bg-slate-800 text-white font-medium'
-                    : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
-                }`}
-              >
-                Page {p.page_number}
-              </button>
-            ))}
-          </div>
+          {extraction && extraction.pages.length > 0 && (
+            <div className="flex items-center gap-1.5 overflow-x-auto pb-1 text-xs">
+              <span className="text-slate-500 mr-1">Pages:</span>
+              {extraction.pages.map((p, idx) => (
+                <button
+                  key={p.page_number}
+                  type="button"
+                  onClick={() => setPreviewPageIndex(idx)}
+                  className={`px-2 py-0.5 rounded text-xs transition-colors cursor-pointer ${
+                    previewPageIndex === idx
+                      ? 'bg-slate-800 text-white font-medium'
+                      : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                  }`}
+                >
+                  Page {p.page_number}
+                </button>
+              ))}
+            </div>
+          )}
 
           {/* Text Preview Window */}
           <div className="rounded border border-slate-200 bg-slate-50 text-slate-800 p-4 font-mono text-xs leading-relaxed max-h-72 overflow-y-auto whitespace-pre-wrap select-text">
-            {mockSampleContractText.pages[previewPageIndex]?.text}
+            {extraction?.pages[previewPageIndex]?.text || 'No text extracted from this page.'}
           </div>
 
           <div className="flex justify-between items-center pt-3 border-t border-slate-100">
@@ -449,17 +515,17 @@ export function NewAnalysisWizardPage() {
               <div>
                 <span className="text-slate-400 block text-[11px]">Selected File</span>
                 <span className="font-medium text-slate-900 block mt-0.5">
-                  {selectedFile?.name}
+                  {uploadedContract?.filename_original || selectedFile?.name}
                 </span>
                 <span className="text-slate-500 text-[11px]">
-                  {formatBytes(selectedFile?.size || 0)} · {mockSampleContractText.page_count} pages
+                  {formatBytes(uploadedContract?.size_bytes || selectedFile?.size || 0)} · {extraction?.page_count || 1} pages
                 </span>
               </div>
 
               <div>
                 <span className="text-slate-400 block text-[11px]">Integrity Hash</span>
-                <span className="font-mono text-slate-700 text-xs block mt-0.5">
-                  {truncateHash(fileSha256 || '9f86d081884c7d659a2feaa0c55ad015a3bf4f1b')}
+                <span className="font-mono text-slate-700 text-xs block mt-0.5 truncate">
+                  {truncateHash(fileSha256 || uploadedContract?.sha256 || '')}
                 </span>
                 <span className="text-emerald-700 text-[11px] font-medium flex items-center gap-1 mt-0.5">
                   <CheckCircle2 className="w-3 h-3" />
@@ -509,7 +575,7 @@ export function NewAnalysisWizardPage() {
         </div>
       )}
 
-      {/* Step 5: Realistic Progress UI */}
+      {/* Step 5: Progress UI */}
       {currentStep === 5 && (
         <div className="rounded-lg border border-slate-200 bg-white p-8 text-center space-y-5">
           <div>
@@ -528,7 +594,7 @@ export function NewAnalysisWizardPage() {
             </div>
             <div className="flex justify-between text-[11px] text-slate-500 font-mono">
               <span>{progressPercent}% Complete</span>
-              <span>Simulation mode</span>
+              <span>Live backend pipeline</span>
             </div>
           </div>
 
@@ -610,6 +676,5 @@ export function NewAnalysisWizardPage() {
         </div>
       )}
     </div>
-
   );
 }

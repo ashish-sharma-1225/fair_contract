@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   FileText,
@@ -6,24 +6,48 @@ import {
   Plus,
   ArrowRight,
   Eye,
+  RefreshCw,
+  AlertCircle,
 } from 'lucide-react';
 import { PageHeader } from '../../components/layout/PageHeader';
 import { StatCard } from '../../components/ui/StatCard';
 import { Button } from '../../components/ui/Button';
 import { RiskBadge } from '../../components/ui/RiskBadge';
-import { demoStore } from '../../mocks/demo-store';
+import { LoadingState } from '../../components/ui/LoadingState';
+import { apiClient } from '../../lib/api-client';
 import { formatShortDate } from '../../lib/utils';
-import type { Contract } from '../../types';
+import type { Contract, Analysis } from '../../types';
 
 export function DashboardPage() {
   const navigate = useNavigate();
-  const [contracts] = useState<Contract[]>(() =>
-    demoStore.getContracts()
-  );
+  const [contracts, setContracts] = useState<Contract[]>([]);
+  const [analyses, setAnalyses] = useState<Analysis[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  const analyses = demoStore.getAnalyses();
+  const loadDashboardData = async () => {
+    setIsLoading(true);
+    setError(null);
+    try {
+      const [fetchedContracts, fetchedAnalyses] = await Promise.all([
+        apiClient.getContracts(),
+        apiClient.getAnalyses(),
+      ]);
+      setContracts(fetchedContracts);
+      setAnalyses(fetchedAnalyses);
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : 'Failed to connect to backend server';
+      setError(msg);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
-  // Metrics from actual store data
+  useEffect(() => {
+    loadDashboardData();
+  }, []);
+
+  // Real backend metrics
   const totalContracts = contracts.length;
   const pendingReviewsCount = analyses.reduce((acc, a) => {
     const unreviewed =
@@ -37,22 +61,46 @@ export function DashboardPage() {
       <PageHeader
         title="Dashboard"
         actions={
-          <Button
-            variant="primary"
-            size="md"
-            onClick={() => navigate('/contracts/new')}
-            leftIcon={<Plus className="w-4 h-4" />}
-          >
-            Analyse New Contract
-          </Button>
+          <div className="flex items-center gap-2">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={loadDashboardData}
+              leftIcon={<RefreshCw className={`w-3.5 h-3.5 ${isLoading ? 'animate-spin' : ''}`} />}
+              className="text-xs"
+            >
+              Refresh
+            </Button>
+            <Button
+              variant="primary"
+              size="md"
+              onClick={() => navigate('/contracts/new')}
+              leftIcon={<Plus className="w-4 h-4" />}
+            >
+              Analyse New Contract
+            </Button>
+          </div>
         }
       />
+
+      {/* Error Banner with retry */}
+      {error && (
+        <div className="rounded-lg border border-red-200 bg-red-50 p-4 text-xs text-red-800 flex items-center justify-between gap-3">
+          <div className="flex items-center gap-2">
+            <AlertCircle className="w-4 h-4 text-red-600 shrink-0" />
+            <span>{error}</span>
+          </div>
+          <Button variant="outline" size="sm" onClick={loadDashboardData} className="text-xs bg-white text-red-700 border-red-300">
+            Retry
+          </Button>
+        </div>
+      )}
 
       {/* Top Metric Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-3.5">
         <StatCard
           title="Total Contracts"
-          value={totalContracts}
+          value={isLoading ? '...' : totalContracts}
           subtitle="Uploaded agreements"
           icon={<FileText className="w-4 h-4 text-slate-400" />}
           onClick={() => navigate('/contracts')}
@@ -60,7 +108,7 @@ export function DashboardPage() {
 
         <StatCard
           title="Pending Reviews"
-          value={pendingReviewsCount}
+          value={isLoading ? '...' : pendingReviewsCount}
           subtitle="Clauses awaiting review"
           icon={<Clock className="w-4 h-4 text-amber-600" />}
           onClick={() => navigate('/contracts')}
@@ -99,7 +147,11 @@ export function DashboardPage() {
           </Button>
         </div>
 
-        {analyses.length === 0 ? (
+        {isLoading ? (
+          <div className="p-8">
+            <LoadingState message="Loading recent contract analyses..." />
+          </div>
+        ) : analyses.length === 0 ? (
           <div className="p-8 text-center text-xs text-slate-500">
             No contracts analyzed yet. Click "Analyse New Contract" to begin.
           </div>
@@ -115,7 +167,7 @@ export function DashboardPage() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100 text-slate-700">
-                {analyses.map(analysis => (
+                {analyses.slice(0, 10).map(analysis => (
                   <tr
                     key={analysis.id}
                     onClick={() => navigate(`/analyses/${analysis.id}`)}

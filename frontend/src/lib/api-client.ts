@@ -1,6 +1,7 @@
 import type {
   Analysis,
   Contract,
+  ContractExtraction,
   Finding,
   Policy,
   RegulatoryRule,
@@ -16,7 +17,11 @@ export class ApiError extends Error {
   data: unknown;
 
   constructor(status: number, statusText: string, data?: unknown) {
-    super(`API Error: ${status} ${statusText}`);
+    const message =
+      (typeof data === 'object' && data !== null && 'detail' in data)
+        ? String((data as { detail: unknown }).detail)
+        : `API Error: ${status} ${statusText}`;
+    super(message);
     this.name = 'ApiError';
     this.status = status;
     this.statusText = statusText;
@@ -32,10 +37,16 @@ async function request<T>(endpoint: string, options?: RequestInit): Promise<T> {
     headers.set('Content-Type', 'application/json');
   }
 
-  const response = await fetch(url, {
-    ...options,
-    headers,
-  });
+  let response: Response;
+  try {
+    response = await fetch(url, {
+      ...options,
+      headers,
+    });
+  } catch (err: unknown) {
+    const errorMsg = err instanceof Error ? err.message : 'Network connection failed';
+    throw new ApiError(0, 'Network Error', { detail: `Could not connect to backend at ${API_BASE_URL}. ${errorMsg}` });
+  }
 
   if (!response.ok) {
     let errorData: unknown;
@@ -57,8 +68,8 @@ async function request<T>(endpoint: string, options?: RequestInit): Promise<T> {
 
 export const apiClient = {
   // Service health check
-  async checkHealth(): Promise<{ status: string; version?: string }> {
-    return request<{ status: string; version?: string }>('/api/health');
+  async checkHealth(): Promise<{ status: string; version?: string; timestamp?: string }> {
+    return request<{ status: string; version?: string; timestamp?: string }>('/api/health');
   },
 
   // Contracts
@@ -79,6 +90,10 @@ export const apiClient = {
     });
   },
 
+  async getContractExtraction(id: string): Promise<ContractExtraction> {
+    return request<ContractExtraction>(`/api/contracts/${id}/extract`);
+  },
+
   async deleteContract(id: string): Promise<{ success: boolean; id: string }> {
     return request<{ success: boolean; id: string }>(`/api/contracts/${id}`, {
       method: 'DELETE',
@@ -86,6 +101,14 @@ export const apiClient = {
   },
 
   // Analyses
+  async getAnalyses(): Promise<Analysis[]> {
+    return request<Analysis[]>('/api/analyses');
+  },
+
+  async getAnalysis(id: string): Promise<Analysis> {
+    return request<Analysis>(`/api/analyses/${id}`);
+  },
+
   async startAnalysis(
     contractId: string,
     params: { policy_ids: string[]; regulatory_rule_ids: string[] }
@@ -96,8 +119,10 @@ export const apiClient = {
     });
   },
 
-  async getAnalysis(id: string): Promise<Analysis> {
-    return request<Analysis>(`/api/analyses/${id}`);
+  async deleteAnalysis(id: string): Promise<{ success: boolean; id: string }> {
+    return request<{ success: boolean; id: string }>(`/api/analyses/${id}`, {
+      method: 'DELETE',
+    });
   },
 
   async updateFindingReview(
