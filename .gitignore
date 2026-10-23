@@ -28,6 +28,15 @@ frontend/dist-ssr/
 .env.*.local
 backend/.env
 
+# Large AI model files & checkpoints
+*.gguf
+*.bin
+*.pt
+*.safetensors
+backend/models/Qwen2.5-1.5B-Instruct/
+models/
+.cache/
+
 # Python
 __pycache__/
 *.py[cod]

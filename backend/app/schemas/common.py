@@ -1,5 +1,5 @@
 from datetime import datetime, timezone
-from typing import Optional
+from typing import Optional, Dict, Any
 from pydantic import BaseModel, ConfigDict, Field
 
 
@@ -15,11 +15,12 @@ class RiskSummary(BaseModel):
 
 
 class HealthResponse(BaseModel):
-    """Health check response schema."""
+    """Health check response schema with database and local AI status."""
 
     status: str = "ok"
     version: str = "1.0.0"
     database: str = "connected"
+    local_ai: Optional[Dict[str, Any]] = None
     timestamp: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
 
     model_config = ConfigDict(from_attributes=True)

@@ -3,6 +3,12 @@ from app.schemas.contract import ContractBase, ContractResponse
 from app.schemas.policy import PolicyCreate, PolicyUpdate, PolicyResponse
 from app.schemas.regulatory import RegulatorySourceResponse, RegulatoryRuleResponse
 from app.schemas.analysis import FindingResponse, FindingReviewUpdate, AnalysisStartRequest, AnalysisResponse
+from app.schemas.ai_analysis import (
+    ContractKeyTerm,
+    ContractRiskItem,
+    PolicyFindingItem,
+    StructuredAIAnalysisResult,
+)
 
 __all__ = [
     "RiskSummary",
@@ -19,4 +25,8 @@ __all__ = [
     "FindingReviewUpdate",
     "AnalysisStartRequest",
     "AnalysisResponse",
+    "ContractKeyTerm",
+    "ContractRiskItem",
+    "PolicyFindingItem",
+    "StructuredAIAnalysisResult",
 ]

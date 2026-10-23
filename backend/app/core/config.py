@@ -39,6 +39,24 @@ class Settings(BaseSettings):
     # Authentication / User ownership default
     DEFAULT_USER_ID: str = "usr_enterprise_01"
 
+    # Local AI Configuration (Qwen2.5-1.5B-Instruct GGUF Q4_K_M)
+    USE_LOCAL_LLM: bool = True
+    MODEL_PATH: str = "models/Qwen2.5-1.5B-Instruct/qwen2.5-1.5b-instruct-q4_k_m.gguf"
+    MODEL_CONTEXT_LENGTH: int = 2048  # Conservative for 8 GB RAM systems
+    MODEL_GPU_LAYERS: int = -1        # -1 = auto-offload all layers if GPU supported; 0 = CPU fallback
+    MODEL_TEMPERATURE: float = 0.1    # Low temperature for factual, deterministic legal extraction
+    MODEL_MAX_NEW_TOKENS: int = 1024
+    MODEL_THREADS: int = 6            # Optimized for Intel Core i5-12250H
+    MODEL_TIMEOUT_SECONDS: int = 120
+
+    @property
+    def resolved_model_path(self) -> str:
+        """Resolve model path relative to backend root directory."""
+        if os.path.isabs(self.MODEL_PATH):
+            return self.MODEL_PATH
+        backend_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+        return os.path.normpath(os.path.join(backend_dir, self.MODEL_PATH))
+
     model_config = SettingsConfigDict(
         env_file=os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))), ".env"),
         env_file_encoding="utf-8",
