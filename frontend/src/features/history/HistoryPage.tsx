@@ -30,17 +30,16 @@ export function HistoryPage() {
   });
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-5">
       <PageHeader
         title="Analysis History"
-        description="Revisit past contract evaluations, review flagged evidence, and track remediation progress."
         actions={
           <Button
             variant="primary"
             size="md"
             onClick={() => navigate('/contracts/new')}
           >
-            New Analysis
+            Analyse Contract
           </Button>
         }
       />

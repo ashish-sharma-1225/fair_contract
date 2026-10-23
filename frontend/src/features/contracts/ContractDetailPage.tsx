@@ -69,14 +69,13 @@ export function ContractDetailPage() {
               onClick={() => navigate('/contracts')}
               className="hover:text-slate-900 cursor-pointer transition-colors"
             >
-              Contracts
+              Contracts History
             </span>
             <span className="text-slate-400">/</span>
             <span className="text-slate-700">Contract details</span>
           </div>
         }
         title={contract.filename_original}
-        description="Contract metadata, cryptographic integrity, and historical clause risk analyses."
         badge={<StatusBadge status={contract.status} />}
         actions={
           <div className="flex items-center gap-2">

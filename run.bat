@@ -1,0 +1,3 @@
+@echo off
+echo Starting ClauseLens...
+cd frontend && npm run dev

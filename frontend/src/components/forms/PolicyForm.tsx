@@ -48,21 +48,21 @@ export function PolicyForm({
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
       {/* Policy Name */}
       <Input
-        label="Policy Title"
-        placeholder="e.g., Maximum Net-30 Payment Window"
+        label="Policy Name"
+        placeholder="e.g. Net-30 Maximum Payment Window"
         {...register('name')}
         error={errors.name?.message}
       />
 
       {/* Category & Severity Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
         <div>
-          <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1.5">
+          <label className="block text-xs font-medium text-slate-700 mb-1">
             Category
           </label>
           <select
             {...register('category')}
-            className="block w-full rounded-lg border border-slate-300 bg-white py-2 px-3 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="block w-full rounded border border-slate-200 bg-white py-1.5 px-2.5 text-xs text-slate-800 focus:outline-none focus:border-slate-400"
           >
             <option value="payment">Payment Terms</option>
             <option value="renewal">Automatic Renewal</option>
@@ -73,30 +73,30 @@ export function PolicyForm({
         </div>
 
         <div>
-          <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1.5">
-            Risk Severity When Violated
+          <label className="block text-xs font-medium text-slate-700 mb-1">
+            Severity
           </label>
           <select
             {...register('severity')}
-            className="block w-full rounded-lg border border-slate-300 bg-white py-2 px-3 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="block w-full rounded border border-slate-200 bg-white py-1.5 px-2.5 text-xs text-slate-800 focus:outline-none focus:border-slate-400"
           >
-            <option value="high">High Risk (Blocker)</option>
-            <option value="medium">Medium Warning (Requires Review)</option>
-            <option value="low">Low Notice (Informational)</option>
+            <option value="high">High Risk</option>
+            <option value="medium">Medium Warning</option>
+            <option value="low">Low Notice</option>
           </select>
         </div>
       </div>
 
-      {/* Natural Language Rule Text */}
+      {/* Rules */}
       <div>
-        <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1.5">
-          Rule Description (Plain Language Instructions)
+        <label className="block text-xs font-medium text-slate-700 mb-1">
+          Rules
         </label>
         <textarea
           rows={3}
-          placeholder="Explain what clause terms the AI reviewer should flag and why..."
+          placeholder="Specify conditions to flag during review..."
           {...register('rule_text')}
-          className="block w-full rounded-lg border border-slate-300 bg-white py-2 px-3 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="block w-full rounded border border-slate-200 bg-white p-2.5 text-xs text-slate-800 focus:outline-none focus:border-slate-400"
         />
         {errors.rule_text && (
           <p className="mt-1 text-xs text-red-600 font-medium">
@@ -106,59 +106,48 @@ export function PolicyForm({
       </div>
 
       {/* Structured Parameters based on category */}
-      <div className="rounded-lg border border-slate-200 bg-slate-50/70 p-4 space-y-3">
-        <h4 className="text-xs font-semibold text-slate-800 uppercase tracking-wider">
-          Structured Parameters (Optional deterministic checks)
-        </h4>
+      <div className="rounded border border-slate-200 bg-slate-50/60 p-3.5 space-y-3">
+        <span className="text-[11px] font-medium text-slate-500 uppercase tracking-wider block">
+          Parameters
+        </span>
 
         {selectedCategory === 'payment' && (
           <Input
-            label="Maximum Allowed Payment Window (Days)"
+            label="Maximum Payment Days"
             type="number"
             placeholder="30"
             {...register('max_payment_days', { valueAsNumber: true })}
             error={errors.max_payment_days?.message}
-            helperText="Clauses specifying payment terms longer than this threshold will be flagged."
           />
         )}
 
         {selectedCategory === 'renewal' && (
           <Input
-            label="Minimum Non-Renewal Notice Required (Days)"
+            label="Minimum Cancellation Notice (Days)"
             type="number"
             placeholder="60"
             {...register('min_cancellation_notice_days', { valueAsNumber: true })}
             error={errors.min_cancellation_notice_days?.message}
-            helperText="Contracts requiring notice periods longer than this or with no reminder will be flagged."
           />
         )}
 
         {selectedCategory === 'liability' && (
           <Input
-            label="Contractor Maximum Liability Cap (% of contract fees)"
+            label="Liability Cap (%)"
             type="number"
             placeholder="100"
             {...register('liability_cap_percent', { valueAsNumber: true })}
             error={errors.liability_cap_percent?.message}
-            helperText="Unlimited liability or caps exceeding this percentage will be flagged."
           />
         )}
-
 
         {selectedCategory === 'jurisdiction' && (
           <Input
-            label="Preferred Domestic Jurisdiction / Venue"
-            placeholder="e.g., New York, USA or London, UK"
+            label="Preferred Jurisdiction"
+            placeholder="e.g. New York or London"
             {...register('preferred_jurisdiction')}
             error={errors.preferred_jurisdiction?.message}
-            helperText="Agreements mandating foreign or distant arbitral courts will be flagged."
           />
-        )}
-
-        {selectedCategory === 'other' && (
-          <p className="text-xs text-slate-500">
-            For general terms, the rule description above is evaluated contextually by Gemini.
-          </p>
         )}
       </div>
 
@@ -168,26 +157,27 @@ export function PolicyForm({
           type="checkbox"
           id="is_enabled"
           {...register('is_enabled')}
-          className="h-4 w-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500"
+          className="h-3.5 w-3.5 rounded border-slate-300 text-blue-600 focus:ring-slate-400"
         />
-        <label htmlFor="is_enabled" className="text-xs font-medium text-slate-700">
-          Enable this policy immediately for upcoming contract analyses
+        <label htmlFor="is_enabled" className="text-xs text-slate-700">
+          Enable policy for contract analyses
         </label>
       </div>
 
       {/* Action Buttons */}
-      <div className="flex justify-end gap-3 pt-4 border-t border-slate-200">
+      <div className="flex justify-end gap-2 pt-3 border-t border-slate-100">
         <Button
           type="button"
           variant="outline"
           size="sm"
           onClick={onCancel}
           disabled={isLoading}
+          className="text-xs"
         >
           Cancel
         </Button>
-        <Button type="submit" variant="primary" size="sm" isLoading={isLoading}>
-          {initialData ? 'Update Policy' : 'Create Policy'}
+        <Button type="submit" variant="primary" size="sm" isLoading={isLoading} className="text-xs">
+          Save
         </Button>
       </div>
     </form>

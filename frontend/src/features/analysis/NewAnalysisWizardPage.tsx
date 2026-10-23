@@ -5,7 +5,6 @@ import {
   Play,
   ArrowRight,
   ArrowLeft,
-  Info,
   Clock,
 } from 'lucide-react';
 import { PageHeader } from '../../components/layout/PageHeader';
@@ -144,10 +143,10 @@ export function NewAnalysisWizardPage() {
   return (
     <div className="space-y-5 max-w-4xl mx-auto">
       <PageHeader
-        title="Analyze Contract"
-        description="Select a contract PDF and evaluate against verified regulatory rules and business policies."
+        title="Analyse Contract"
+        description="Upload a contract to evaluate against your policies and rules."
         backTo="/dashboard"
-        backLabel="Return to Dashboard"
+        backLabel="Dashboard"
       />
 
       {/* Stepper Navigation */}
@@ -204,11 +203,8 @@ export function NewAnalysisWizardPage() {
       {/* Step 1: Upload */}
       {currentStep === 1 && (
         <div className="rounded-lg border border-slate-200 bg-white p-5 space-y-4">
-          <div>
-            <h2 className="text-sm font-semibold text-slate-900">Step 1: Upload Contract PDF</h2>
-            <p className="text-xs text-slate-500 mt-0.5">
-              Select or drop your PDF contract for text extraction and risk analysis.
-            </p>
+          <div className="pb-2 border-b border-slate-100">
+            <h2 className="text-sm font-semibold text-slate-900">Upload Contract</h2>
           </div>
 
           <FileDropzone
@@ -220,7 +216,7 @@ export function NewAnalysisWizardPage() {
 
           <div className="flex justify-between items-center pt-3 border-t border-slate-100">
             <span className="text-xs text-slate-500">
-              {selectedFile ? 'PDF ready for text extraction' : 'Select a contract or demo sample to continue'}
+              {selectedFile ? 'PDF selected' : 'Choose a file or select a sample'}
             </span>
 
             <Button
@@ -231,7 +227,7 @@ export function NewAnalysisWizardPage() {
               rightIcon={<ArrowRight className="w-3.5 h-3.5" />}
               className="text-xs"
             >
-              Next: Text preview
+              Continue
             </Button>
           </div>
         </div>
@@ -240,16 +236,8 @@ export function NewAnalysisWizardPage() {
       {/* Step 2: Extraction Preview */}
       {currentStep === 2 && (
         <div className="rounded-lg border border-slate-200 bg-white p-5 space-y-4">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-3 border-b border-slate-100">
-            <div>
-              <h2 className="text-sm font-semibold text-slate-900">Step 2: Extracted Text Preview</h2>
-              <p className="text-xs text-slate-500 mt-0.5">
-                Inspect extracted text from the document before running analysis.
-              </p>
-            </div>
-            <span className="text-xs text-slate-500">
-              Extraction preview
-            </span>
+          <div className="pb-3 border-b border-slate-100">
+            <h2 className="text-sm font-semibold text-slate-900">Text Preview</h2>
           </div>
 
           {/* Extracted Stats */}
@@ -331,17 +319,14 @@ export function NewAnalysisWizardPage() {
       {/* Step 3: Select Rules & Policies */}
       {currentStep === 3 && (
         <div className="rounded-lg border border-slate-200 bg-white p-5 space-y-5">
-          <div>
-            <h2 className="text-sm font-semibold text-slate-900">Step 3: Select Regulatory Rules & Policies</h2>
-            <p className="text-xs text-slate-500 mt-0.5">
-              Select the legal rules and business policies to evaluate against this document.
-            </p>
+          <div className="pb-2 border-b border-slate-100">
+            <h2 className="text-sm font-semibold text-slate-900">Select Policies & Rules</h2>
           </div>
 
           {/* Regulatory Rules Section */}
           <div className="space-y-2.5">
             <h3 className="text-xs font-semibold text-slate-700 uppercase tracking-wider">
-              Statutory and Regulatory Rules
+              Statutory Rules
             </h3>
 
             <div className="space-y-2">
@@ -376,9 +361,6 @@ export function NewAnalysisWizardPage() {
                       <p className="text-slate-800 mt-1">
                         {rule.rule_text}
                       </p>
-                      <span className="text-[11px] text-slate-400 mt-0.5 block">
-                        Source: {rule.source?.title}
-                      </span>
                     </div>
                   </label>
                 );
@@ -389,7 +371,7 @@ export function NewAnalysisWizardPage() {
           {/* User Policies Section */}
           <div className="space-y-2.5 pt-3 border-t border-slate-100">
             <h3 className="text-xs font-semibold text-slate-700 uppercase tracking-wider">
-              User Business Policies
+              Contract Policies
             </h3>
 
             <div className="space-y-2">
@@ -438,7 +420,7 @@ export function NewAnalysisWizardPage() {
               leftIcon={<ArrowLeft className="w-3.5 h-3.5" />}
               className="text-xs"
             >
-              Back to preview
+              Back
             </Button>
 
             <Button
@@ -449,7 +431,7 @@ export function NewAnalysisWizardPage() {
               rightIcon={<ArrowRight className="w-3.5 h-3.5" />}
               className="text-xs"
             >
-              Next: Review configuration
+              Continue
             </Button>
           </div>
         </div>
@@ -458,11 +440,8 @@ export function NewAnalysisWizardPage() {
       {/* Step 4: Review Configuration */}
       {currentStep === 4 && (
         <div className="rounded-lg border border-slate-200 bg-white p-5 space-y-4">
-          <div>
-            <h2 className="text-sm font-semibold text-slate-900">Step 4: Confirm Analysis Configuration</h2>
-            <p className="text-xs text-slate-500 mt-0.5">
-              Review document parameters before launching automated clause evaluation.
-            </p>
+          <div className="pb-2 border-b border-slate-100">
+            <h2 className="text-sm font-semibold text-slate-900">Confirm Analysis</h2>
           </div>
 
           <div className="rounded-lg border border-slate-200 bg-slate-50/60 p-4 space-y-3 text-xs">
@@ -491,34 +470,19 @@ export function NewAnalysisWizardPage() {
 
             <div className="border-t border-slate-200 pt-3 flex flex-wrap gap-4 text-xs text-slate-700">
               <div>
-                <span className="text-slate-400 block text-[11px]">Regulatory Rules</span>
+                <span className="text-slate-400 block text-[11px]">Rules</span>
                 <span className="font-medium text-slate-900">
-                  {selectedRuleIds.length} rule frameworks selected
+                  {selectedRuleIds.length} statutory rules
                 </span>
               </div>
 
               <div>
-                <span className="text-slate-400 block text-[11px]">Business Policies</span>
+                <span className="text-slate-400 block text-[11px]">Policies</span>
                 <span className="font-medium text-slate-900">
-                  {selectedPolicyIds.length} custom policies active
-                </span>
-              </div>
-
-              <div>
-                <span className="text-slate-400 block text-[11px]">Analysis Engine</span>
-                <span className="font-medium text-slate-900">
-                  Local Simulation Engine
+                  {selectedPolicyIds.length} custom policies
                 </span>
               </div>
             </div>
-          </div>
-
-          {/* Legal disclaimer notice */}
-          <div className="flex items-center gap-2 rounded border border-slate-200 bg-slate-50 p-3 text-xs text-slate-600">
-            <Info className="w-3.5 h-3.5 text-slate-400 shrink-0" />
-            <span>
-              Review assistance only. Findings are potential issues for human review, not legal advice.
-            </span>
           </div>
 
           <div className="flex justify-between items-center pt-3 border-t border-slate-100">
@@ -529,7 +493,7 @@ export function NewAnalysisWizardPage() {
               leftIcon={<ArrowLeft className="w-3.5 h-3.5" />}
               className="text-xs"
             >
-              Back to rules
+              Back
             </Button>
 
             <Button
@@ -539,7 +503,7 @@ export function NewAnalysisWizardPage() {
               leftIcon={<Play className="w-3.5 h-3.5" />}
               className="text-xs"
             >
-              Start contract analysis
+              Start Analysis
             </Button>
           </div>
         </div>
@@ -550,11 +514,8 @@ export function NewAnalysisWizardPage() {
         <div className="rounded-lg border border-slate-200 bg-white p-8 text-center space-y-5">
           <div>
             <h2 className="text-base font-semibold text-slate-900">
-              Analyzing Contract Clauses
+              Analyzing Contract
             </h2>
-            <p className="text-xs text-slate-500 mt-0.5">
-              Executing staged document validation, rule alignment, and evidence quotation verification.
-            </p>
           </div>
 
           {/* Progress Bar */}

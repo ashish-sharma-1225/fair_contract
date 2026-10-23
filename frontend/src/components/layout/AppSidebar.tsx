@@ -2,7 +2,6 @@ import { NavLink, useLocation } from 'react-router-dom';
 import {
   LayoutDashboard,
   FileSearch,
-  FileText,
   ShieldCheck,
   Scale,
   History,
@@ -27,28 +26,18 @@ const navItems = [
     icon: LayoutDashboard,
   },
   {
-    name: 'Analyze Contract',
+    name: 'Analyse Contract',
     path: '/contracts/new',
     icon: FileSearch,
   },
   {
-    name: 'Contracts',
-    path: '/contracts',
-    icon: FileText,
-  },
-  {
-    name: 'Policies',
+    name: 'Contract Policies',
     path: '/policies',
     icon: ShieldCheck,
   },
   {
-    name: 'Regulatory Rules',
-    path: '/regulatory-rules',
-    icon: Scale,
-  },
-  {
-    name: 'Analysis History',
-    path: '/history',
+    name: 'Contracts History',
+    path: '/contracts',
     icon: History,
   },
   {

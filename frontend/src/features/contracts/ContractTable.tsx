@@ -3,12 +3,12 @@ import { useNavigate } from 'react-router-dom';
 import {
   FileText,
   Trash2,
-  Play,
   Eye,
   Hash,
   Copy,
   Check,
 } from 'lucide-react';
+import { Button } from '../../components/ui/Button';
 import { StatusBadge } from '../../components/ui/StatusBadge';
 import { ConfirmDialog } from '../../components/ui/ConfirmDialog';
 
@@ -46,8 +46,8 @@ export function ContractTable({
         <table className="w-full text-left text-xs">
           <thead className="border-b border-slate-200 bg-slate-50/60 text-slate-500 font-medium">
             <tr>
-              <th className="py-2.5 px-3.5">Contract</th>
-              <th className="py-2.5 px-3.5">Uploaded</th>
+              <th className="py-2.5 px-3.5">Contract Name</th>
+              <th className="py-2.5 px-3.5">Analysis Date</th>
               <th className="py-2.5 px-3.5">Pages</th>
               <th className="py-2.5 px-3.5">SHA-256</th>
               <th className="py-2.5 px-3.5">Status</th>
@@ -59,7 +59,13 @@ export function ContractTable({
             {contracts.map(contract => (
               <tr
                 key={contract.id}
-                onClick={() => navigate(`/contracts/${contract.id}`)}
+                onClick={() =>
+                  navigate(
+                    contract.latest_analysis_id
+                      ? `/analyses/${contract.latest_analysis_id}`
+                      : `/contracts/${contract.id}`
+                  )
+                }
                 className="hover:bg-slate-50/60 transition-colors cursor-pointer"
               >
                 {/* Name */}
@@ -77,7 +83,7 @@ export function ContractTable({
                   </div>
                 </td>
 
-                {/* Uploaded */}
+                {/* Analysis / Uploaded Date */}
                 <td className="py-2.5 px-3.5 text-slate-500 whitespace-nowrap">
                   {formatShortDate(contract.uploaded_at)}
                 </td>
@@ -97,7 +103,7 @@ export function ContractTable({
                     type="button"
                     onClick={e => handleCopyHash(contract.sha256, e)}
                     className="inline-flex items-center gap-1 font-mono text-[11px] text-slate-500 hover:text-slate-800 transition-colors cursor-pointer"
-                    title={`Full Hash: ${contract.sha256} (Click to copy)`}
+                    title={`Full Hash: ${contract.sha256}`}
                   >
                     <Hash className="w-3 h-3 text-slate-400" />
                     <span>{truncateHash(contract.sha256, 6, 6)}</span>
@@ -148,7 +154,7 @@ export function ContractTable({
                     </div>
                   ) : (
                     <span className="text-slate-400 text-[11px]">
-                      Not yet analyzed
+                      Not analyzed
                     </span>
                   )}
                 </td>
@@ -156,39 +162,34 @@ export function ContractTable({
                 {/* Actions */}
                 <td className="py-2.5 px-3.5 text-right whitespace-nowrap">
                   <div
-                    className="flex items-center justify-end gap-1"
+                    className="flex items-center justify-end gap-1.5"
                     onClick={e => e.stopPropagation()}
                   >
-                    {contract.latest_analysis_id ? (
-                      <button
-                        type="button"
-                        onClick={() =>
-                          navigate(`/analyses/${contract.latest_analysis_id}`)
-                        }
-                        className="p-1 text-slate-500 hover:text-slate-800 rounded transition-colors"
-                        title="View analysis report"
-                      >
-                        <Eye className="w-3.5 h-3.5" />
-                      </button>
-                    ) : (
-                      <button
-                        type="button"
-                        onClick={() => navigate('/contracts/new')}
-                        className="p-1 text-slate-500 hover:text-slate-800 rounded transition-colors"
-                        title="Analyze contract"
-                      >
-                        <Play className="w-3.5 h-3.5" />
-                      </button>
-                    )}
-
-                    <button
-                      type="button"
-                      onClick={() => setDeletingContractId(contract.id)}
-                      className="p-1 text-slate-400 hover:text-red-700 rounded transition-colors"
-                      title="Delete contract"
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() =>
+                        navigate(
+                          contract.latest_analysis_id
+                            ? `/analyses/${contract.latest_analysis_id}`
+                            : `/contracts/${contract.id}`
+                        )
+                      }
+                      leftIcon={<Eye className="w-3 h-3" />}
+                      className="text-xs"
                     >
-                      <Trash2 className="w-3.5 h-3.5" />
-                    </button>
+                      View
+                    </Button>
+
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => setDeletingContractId(contract.id)}
+                      leftIcon={<Trash2 className="w-3 h-3 text-red-600" />}
+                      className="text-xs text-red-600 hover:bg-red-50"
+                    >
+                      Delete
+                    </Button>
                   </div>
                 </td>
               </tr>
@@ -197,13 +198,12 @@ export function ContractTable({
         </table>
       </div>
 
-
       {/* Delete Confirmation Dialog */}
       <ConfirmDialog
         isOpen={!!deletingContractId}
-        title="Permanently Delete Contract?"
-        description={`Are you sure you want to delete "${selectedContractForDeletion?.filename_original}"? This action will remove the contract, extracted text, and all associated risk analyses according to your retention policy.`}
-        confirmLabel="Delete Contract"
+        title="Delete Contract?"
+        description={`Are you sure you want to delete "${selectedContractForDeletion?.filename_original}"?`}
+        confirmLabel="Delete"
         variant="danger"
         onConfirm={() => {
           if (deletingContractId) {

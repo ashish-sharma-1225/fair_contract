@@ -114,15 +114,15 @@ export function AnalysisResultsPage() {
       <PageHeader
         breadcrumb={
           <div className="flex items-center gap-1.5 text-xs text-slate-500">
-            <Link to="/history" className="hover:text-slate-900 transition-colors">
-              Analysis History
+            <Link to="/contracts" className="hover:text-slate-900 transition-colors">
+              Contracts History
             </Link>
             <span className="text-slate-400">/</span>
-            <span className="text-slate-700">Contract Analysis</span>
+            <span className="text-slate-700">Analysis</span>
           </div>
         }
         title="Contract Risk Analysis"
-        description="Review flagged clauses and supporting evidence."
+        description="Flagged clauses and supporting evidence."
         badge={<RiskBadge severity={analysis.overall_risk_level} size="sm" />}
         actions={
           <div className="flex items-center gap-2">
@@ -141,7 +141,7 @@ export function AnalysisResultsPage() {
               onClick={() => navigate('/contracts/new')}
               className="text-xs"
             >
-              Analyze another
+              Analyse another
             </Button>
           </div>
         }

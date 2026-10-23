@@ -33,10 +33,9 @@ export function ContractsPage() {
   });
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-5">
       <PageHeader
-        title="Contracts Library"
-        description="Manage your uploaded PDF agreements, review integrity hashes, and inspect clause risk histories."
+        title="Contracts History"
         actions={
           <Button
             variant="primary"
@@ -44,7 +43,7 @@ export function ContractsPage() {
             onClick={() => navigate('/contracts/new')}
             leftIcon={<Plus className="w-4 h-4" />}
           >
-            Upload Contract
+            Analyse Contract
           </Button>
         }
       />
@@ -88,10 +87,10 @@ export function ContractsPage() {
           title="No contracts found"
           description={
             searchQuery || statusFilter !== 'all'
-              ? 'No contracts match your current filter criteria. Try adjusting your search query.'
-              : 'You have not uploaded any contracts yet. Get started by analyzing your first agreement.'
+              ? 'No contracts match your search.'
+              : 'No contracts uploaded yet.'
           }
-          actionLabel="Upload New Contract"
+          actionLabel="Analyse Contract"
           onAction={() => navigate('/contracts/new')}
           secondaryActionLabel={
             searchQuery || statusFilter !== 'all' ? 'Reset Filters' : undefined

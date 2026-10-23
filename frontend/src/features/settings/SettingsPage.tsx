@@ -57,24 +57,18 @@ export function SettingsPage() {
   };
 
   return (
-    <div className="space-y-6 max-w-4xl mx-auto">
+    <div className="space-y-5 max-w-3xl mx-auto">
       <PageHeader
         title="Settings & Privacy"
-        description="Manage your account profile, data retention policies, and backend API integration settings."
       />
 
       {/* Backend Integration Status */}
       <div className="rounded-lg border border-slate-200 bg-white p-5 space-y-3 text-xs">
-        <div>
-          <h2 className="text-sm font-semibold text-slate-900">Backend API Connection</h2>
-          <p className="text-slate-500 mt-0.5">
-            Connects to a FastAPI service for document parsing, database persistence, and model execution.
-          </p>
-        </div>
+        <h2 className="text-sm font-semibold text-slate-900">Backend API Connection</h2>
 
         <div className="rounded border border-slate-200 bg-slate-50 p-3 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs">
           <div>
-            <span className="text-slate-400 block text-[11px]">Backend URL (VITE_API_BASE_URL)</span>
+            <span className="text-slate-400 block text-[11px]">API URL</span>
             <code className="font-mono text-slate-800">
               {API_BASE_URL}
             </code>
@@ -107,12 +101,7 @@ export function SettingsPage() {
 
       {/* Profile & Account Information */}
       <div className="rounded-lg border border-slate-200 bg-white p-5 space-y-4 text-xs">
-        <div>
-          <h2 className="text-sm font-semibold text-slate-900">Profile & Organization</h2>
-          <p className="text-slate-500 mt-0.5">
-            Account identity associated with uploaded agreements
-          </p>
-        </div>
+        <h2 className="text-sm font-semibold text-slate-900">Profile & Organization</h2>
 
         <form onSubmit={handleSaveProfile} className="space-y-4">
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
@@ -146,16 +135,14 @@ export function SettingsPage() {
           <div className="flex items-center justify-between pt-3 border-t border-slate-100">
             {isSavedNotice ? (
               <span className="text-xs text-emerald-700 font-medium">
-                Profile updated
+                Saved
               </span>
             ) : (
-              <span className="text-xs text-slate-400">
-                Saved in local simulation
-              </span>
+              <span />
             )}
 
             <Button type="submit" variant="primary" size="sm" className="text-xs">
-              Save changes
+              Save
             </Button>
           </div>
         </form>
@@ -163,25 +150,11 @@ export function SettingsPage() {
 
       {/* Data Retention & Privacy Controls */}
       <div className="rounded-lg border border-slate-200 bg-white p-5 space-y-3.5 text-xs text-slate-600">
-        <div>
-          <h2 className="text-sm font-semibold text-slate-900">Data Privacy & Document Retention</h2>
-          <p className="text-slate-500 mt-0.5">
-            Confidentiality guarantees and automated deletion schedule
-          </p>
-        </div>
-
-        <div className="rounded border border-slate-200 bg-slate-50 p-3 space-y-1">
-          <h3 className="font-medium text-slate-900 text-xs">
-            Cryptographic Integrity & Local Isolation
-          </h3>
-          <p className="leading-relaxed">
-            Every uploaded contract is assigned a unique SHA-256 fingerprint. File bytes are kept in local storage and never publicly indexed.
-          </p>
-        </div>
+        <h2 className="text-sm font-semibold text-slate-900">Data Retention</h2>
 
         <div>
           <label className="block text-xs font-medium text-slate-700 mb-1">
-            Automated document deletion schedule
+            Retention Schedule
           </label>
           <select
             value={profile.retention_days}
@@ -191,27 +164,19 @@ export function SettingsPage() {
                 retention_days: Number(e.target.value),
               })
             }
-            className="h-8 rounded border border-slate-200 bg-white px-2.5 text-xs font-normal text-slate-800 focus:outline-none focus:border-slate-400 cursor-pointer"
+            className="h-8 rounded border border-slate-200 bg-white px-2.5 text-xs text-slate-800 focus:outline-none focus:border-slate-400 cursor-pointer"
           >
-            <option value={7}>Purge after 7 days</option>
-            <option value={30}>Purge after 30 days</option>
-            <option value={90}>Purge after 90 days (Default)</option>
-            <option value={365}>Purge after 1 year</option>
+            <option value={7}>7 days</option>
+            <option value={30}>30 days</option>
+            <option value={90}>90 days</option>
+            <option value={365}>1 year</option>
           </select>
-          <p className="mt-1 text-[11px] text-slate-400">
-            Contracts and analyses expire automatically according to this schedule.
-          </p>
         </div>
       </div>
 
       {/* Workspace Reset */}
       <div className="rounded-lg border border-slate-200 bg-white p-5 space-y-3 text-xs">
-        <div>
-          <h2 className="text-sm font-semibold text-slate-900">Workspace Management</h2>
-          <p className="text-slate-500 mt-0.5">
-            Actions for resetting demo data or clearing local storage
-          </p>
-        </div>
+        <h2 className="text-sm font-semibold text-slate-900">Workspace Management</h2>
 
         <div className="space-y-2">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-3 rounded border border-slate-200">
@@ -220,7 +185,7 @@ export function SettingsPage() {
                 Reset Demo Workspace
               </p>
               <p className="text-slate-500 text-[11px] mt-0.5">
-                Restores original sample contracts (Apex MSA, NorthStar Retainer) and policies.
+                Restores original sample agreements and policies.
               </p>
             </div>
             <Button
@@ -229,7 +194,7 @@ export function SettingsPage() {
               onClick={() => setIsResetDialogOpen(true)}
               className="text-xs shrink-0"
             >
-              Reset seed data
+              Reset
             </Button>
           </div>
 
@@ -239,7 +204,7 @@ export function SettingsPage() {
                 Purge All Data
               </p>
               <p className="text-slate-500 text-[11px] mt-0.5">
-                Clears all contract files, extractions, and analyses from local storage.
+                Clears all files and analyses from local storage.
               </p>
             </div>
             <Button
@@ -248,7 +213,7 @@ export function SettingsPage() {
               onClick={() => setIsDeleteAllDialogOpen(true)}
               className="text-xs shrink-0 text-red-700 hover:bg-red-50 hover:border-red-200"
             >
-              Purge all data
+              Purge
             </Button>
           </div>
         </div>
