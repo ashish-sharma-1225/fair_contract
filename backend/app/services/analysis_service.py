@@ -271,6 +271,30 @@ class AnalysisService:
                 )
             )
 
+        # Map missing or omitted protective terms (e.g. for freelancers / small vendors)
+        for term in ai_result.missing_or_ambiguous_terms:
+            cleaned_term = term.strip()
+            if cleaned_term and len(cleaned_term) > 3:
+                findings_to_create.append(
+                    Finding(
+                        id=f"fnd_{uuid.uuid4().hex[:12]}",
+                        analysis_id=analysis_id,
+                        policy_id=None,
+                        trigger_type="ai_heuristic",
+                        trigger_name=f"Missing Term: {cleaned_term[:60]}",
+                        category="other",
+                        severity="medium",
+                        source_quote="[Clause is completely omitted from the contract text]",
+                        page_number=1,
+                        section_reference="Missing / Uncovered Protection",
+                        reason=f"This protection is not covered in the agreement: {cleaned_term}",
+                        remediation_advice=f"Propose adding a protective clause addressing: {cleaned_term}",
+                        evidence_verified=True,
+                        review_status="needs_review",
+                        created_at=now,
+                    )
+                )
+
         # Evaluate regulatory rules (GDPR / Statutory late payment)
         full_text_lower = " \n ".join(pages_text).lower()
         for rule in regulatory_rules:

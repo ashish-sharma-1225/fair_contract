@@ -8,7 +8,11 @@ from sqlalchemy import desc
 from app.models.contract import Contract
 from app.models.analysis import Analysis, Finding
 from app.schemas.common import RiskSummary
-from app.schemas.contract import ContractResponse
+from app.schemas.contract import (
+    ContractResponse,
+    ContractExtractionPage,
+    ContractExtractionResponse,
+)
 from app.services.file_service import FileService
 
 logger = logging.getLogger("clauselens.contract_service")
@@ -139,3 +143,42 @@ class ContractService:
         db.commit()
         logger.info("Contract %s deleted successfully by user %s", contract_id, user_id)
         return True
+
+    @classmethod
+    def get_contract_extraction(cls, db: Session, contract_id: str, user_id: str) -> ContractExtractionResponse:
+        """Extract text and pages from contract document for UI preview and analysis."""
+        contract = (
+            db.query(Contract)
+            .filter(
+                Contract.id == contract_id,
+                Contract.owner_id == user_id,
+                Contract.deleted_at.is_(None),
+            )
+            .first()
+        )
+        if not contract:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Contract not found or access denied.",
+            )
+
+        pages_text = FileService.extract_text_pages(contract.storage_key)
+        pages: List[ContractExtractionPage] = []
+        for idx, text in enumerate(pages_text):
+            pnum = idx + 1
+            paragraphs = [p for p in text.split("\n\n") if p.strip()]
+            pages.append(
+                ContractExtractionPage(
+                    page_number=pnum,
+                    text=text,
+                    clauses_count=max(1, len(paragraphs)),
+                )
+            )
+
+        return ContractExtractionResponse(
+            contract_id=contract.id,
+            page_count=len(pages) or contract.page_count,
+            pages=pages,
+            extracted_at=datetime.now(timezone.utc).isoformat(),
+        )
+

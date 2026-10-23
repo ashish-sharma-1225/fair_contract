@@ -23,3 +23,16 @@ class ContractResponse(ContractBase):
     risk_summary: Optional[RiskSummary] = None
 
     model_config = ConfigDict(from_attributes=True)
+
+
+class ContractExtractionPage(BaseModel):
+    page_number: int
+    text: str
+    clauses_count: int
+
+
+class ContractExtractionResponse(BaseModel):
+    contract_id: str
+    page_count: int
+    pages: list[ContractExtractionPage]
+    extracted_at: str

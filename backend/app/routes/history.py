@@ -19,6 +19,16 @@ def list_history(
     return AnalysisService.list_history(db, user_id)
 
 
+@router.get("/analyses", response_model=List[AnalysisResponse], summary="Retrieve analysis list (alias)")
+def list_analyses_alias(
+    db: Session = Depends(get_db),
+    user_id: str = Depends(get_current_user_id),
+) -> List[AnalysisResponse]:
+    """Alias for /api/history matching frontend apiClient.getAnalyses."""
+    return AnalysisService.list_history(db, user_id)
+
+
+
 @router.delete("/history/{id}", response_model=SuccessResponse, summary="Delete an analysis history entry")
 def delete_history_entry(
     id: str,

@@ -3,7 +3,7 @@ from fastapi import APIRouter, Depends, UploadFile, File
 from sqlalchemy.orm import Session
 from app.database import get_db
 from app.core.dependencies import get_current_user_id
-from app.schemas.contract import ContractResponse
+from app.schemas.contract import ContractResponse, ContractExtractionResponse
 from app.schemas.analysis import AnalysisResponse, AnalysisStartRequest
 from app.schemas.common import SuccessResponse
 from app.services.contract_service import ContractService
@@ -49,6 +49,16 @@ def get_contract(
 ) -> ContractResponse:
     """Retrieve contract metadata by ID enforcing user ownership."""
     return ContractService.get_contract(db, id, user_id)
+
+
+@router.get("/{id}/extract", response_model=ContractExtractionResponse, summary="Retrieve contract text extraction")
+def get_contract_extraction(
+    id: str,
+    db: Session = Depends(get_db),
+    user_id: str = Depends(get_current_user_id),
+) -> ContractExtractionResponse:
+    """Retrieve extracted text and pages for preview and clause analysis."""
+    return ContractService.get_contract_extraction(db, id, user_id)
 
 
 @router.delete("/{id}", response_model=SuccessResponse, summary="Delete a contract")
