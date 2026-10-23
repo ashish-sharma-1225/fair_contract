@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # Dependencies
 node_modules/
 __pycache__/
@@ -20,6 +21,64 @@ frontend/dist-ssr/
 *.local
 
 # IDE & OS
+=======
+# Environment variables
+.env
+.env.local
+.env.*.local
+backend/.env
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# Virtual environments
+venv/
+.venv/
+backend/venv/
+backend/.venv/
+env/
+ENV/
+
+# Node
+node_modules/
+dist/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+
+# Uploads and temporary storage
+backend/uploads/
+uploads/
+*.pdf.tmp
+
+# Database
+*.sqlite3
+*.db
+
+# IDE and OS
+>>>>>>> 73cd43baa9239e0f0e7a66b4039e4264647e20d9
 .vscode/
 .idea/
 .DS_Store
