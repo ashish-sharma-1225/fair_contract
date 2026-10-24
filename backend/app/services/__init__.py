@@ -1,3 +1,6 @@
+<<<<<<< HEAD
+# package
+=======
 from app.services.file_service import FileService
 from app.services.contract_service import ContractService
 from app.services.policy_service import PolicyService
@@ -13,3 +16,4 @@ __all__ = [
     "LocalLLMService",
     "local_llm_service",
 ]
+>>>>>>> 1d6f5a40150a2a405464c0da4373cfd093162216

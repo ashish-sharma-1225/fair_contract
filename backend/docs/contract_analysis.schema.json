@@ -1,0 +1,296 @@
+{
+  "$defs": {
+    "ClauseType": {
+      "description": "Types of contract clauses.",
+      "enum": [
+        "payment",
+        "termination",
+        "renewal",
+        "liability",
+        "confidentiality",
+        "jurisdiction",
+        "other"
+      ],
+      "title": "ClauseType",
+      "type": "string"
+    },
+    "KeyTerm": {
+      "description": "A key term extracted from a contract.",
+      "properties": {
+        "name": {
+          "description": "The name of the key term",
+          "title": "Name",
+          "type": "string"
+        },
+        "value": {
+          "description": "The value or description of the key term",
+          "title": "Value",
+          "type": "string"
+        },
+        "clause_type": {
+          "$ref": "#/$defs/ClauseType",
+          "default": "other",
+          "description": "The type of clause this term belongs to"
+        },
+        "description": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Optional additional description",
+          "title": "Description"
+        }
+      },
+      "required": [
+        "name",
+        "value"
+      ],
+      "title": "KeyTerm",
+      "type": "object"
+    },
+    "PolicyFinding": {
+      "description": "A finding regarding a policy or regulatory compliance.",
+      "properties": {
+        "policy_name": {
+          "description": "Name of the policy or regulation",
+          "title": "Policy Name",
+          "type": "string"
+        },
+        "rule": {
+          "description": "The exact policy rule text supplied by the caller that this finding corresponds to. Must match one of the supplied rules for the named policy.",
+          "title": "Rule",
+          "type": "string"
+        },
+        "status": {
+          "$ref": "#/$defs/PolicyFindingStatus",
+          "description": "Whether the contract matches, conflicts with, or lacks the requirement."
+        },
+        "finding": {
+          "description": "Description of the finding",
+          "title": "Finding",
+          "type": "string"
+        },
+        "evidence": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Evidence supporting the finding",
+          "title": "Evidence"
+        },
+        "clause_reference": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Reference to the relevant contract clause",
+          "title": "Clause Reference"
+        },
+        "severity": {
+          "$ref": "#/$defs/Severity",
+          "default": "medium",
+          "description": "Severity of the finding"
+        }
+      },
+      "required": [
+        "policy_name",
+        "rule",
+        "status",
+        "finding"
+      ],
+      "title": "PolicyFinding",
+      "type": "object"
+    },
+    "PolicyFindingStatus": {
+      "description": "Compliance status for policy findings.",
+      "enum": [
+        "match",
+        "conflict",
+        "missing"
+      ],
+      "title": "PolicyFindingStatus",
+      "type": "string"
+    },
+    "Recommendation": {
+      "description": "A recommendation for contract improvement or action.",
+      "properties": {
+        "title": {
+          "description": "Title of the recommendation",
+          "title": "Title",
+          "type": "string"
+        },
+        "description": {
+          "description": "Detailed description",
+          "title": "Description",
+          "type": "string"
+        },
+        "severity": {
+          "$ref": "#/$defs/Severity",
+          "default": "medium",
+          "description": "Severity level"
+        },
+        "action_required": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Specific action required",
+          "title": "Action Required"
+        },
+        "estimated_impact": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Estimated impact of implementing",
+          "title": "Estimated Impact"
+        }
+      },
+      "required": [
+        "title",
+        "description"
+      ],
+      "title": "Recommendation",
+      "type": "object"
+    },
+    "Risk": {
+      "description": "A risk identified in the contract.",
+      "properties": {
+        "description": {
+          "description": "Description of the risk",
+          "title": "Description",
+          "type": "string"
+        },
+        "severity": {
+          "$ref": "#/$defs/Severity",
+          "default": "medium",
+          "description": "Severity level of the risk"
+        },
+        "affected_clauses": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "References to affected clauses",
+          "title": "Affected Clauses"
+        },
+        "mitigation": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Proposed mitigation measures",
+          "title": "Mitigation"
+        },
+        "evidence": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Evidence supporting the risk claim",
+          "title": "Evidence"
+        }
+      },
+      "required": [
+        "description"
+      ],
+      "title": "Risk",
+      "type": "object"
+    },
+    "Severity": {
+      "description": "Severity levels for risks and findings.",
+      "enum": [
+        "low",
+        "medium",
+        "high"
+      ],
+      "title": "Severity",
+      "type": "string"
+    }
+  },
+  "description": "Root model for contract analysis results.",
+  "properties": {
+    "summary": {
+      "description": "Overall summary of the contract analysis",
+      "title": "Summary",
+      "type": "string"
+    },
+    "key_terms": {
+      "description": "Extracted key terms from the contract",
+      "items": {
+        "$ref": "#/$defs/KeyTerm"
+      },
+      "title": "Key Terms",
+      "type": "array"
+    },
+    "risks": {
+      "description": "Identified risks in the contract",
+      "items": {
+        "$ref": "#/$defs/Risk"
+      },
+      "title": "Risks",
+      "type": "array"
+    },
+    "policy_findings": {
+      "description": "Policy/regulatory compliance findings",
+      "items": {
+        "$ref": "#/$defs/PolicyFinding"
+      },
+      "title": "Policy Findings",
+      "type": "array"
+    },
+    "recommendations": {
+      "description": "Generated recommendations",
+      "items": {
+        "$ref": "#/$defs/Recommendation"
+      },
+      "title": "Recommendations",
+      "type": "array"
+    }
+  },
+  "required": [
+    "summary"
+  ],
+  "title": "ContractAnalysis",
+  "type": "object"
+}
