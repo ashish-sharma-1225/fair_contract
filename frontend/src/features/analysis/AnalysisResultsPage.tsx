@@ -10,6 +10,7 @@ import {
   type FindingsFilterState,
 } from '../../components/findings/FindingsFilter';
 import { FindingDetailDrawer } from '../../components/findings/FindingDetailDrawer';
+import { RuleComplianceCard } from '../../components/findings/RuleComplianceCard';
 import { ErrorState } from '../../components/ui/ErrorState';
 import { LoadingState } from '../../components/ui/LoadingState';
 import { apiClient } from '../../lib/api-client';
@@ -224,6 +225,9 @@ export function AnalysisResultsPage() {
           </p>
         )}
       </section>
+
+      {/* Unique Feature: Rule Compliance Score & 1-Click Polite Pushback Action */}
+      <RuleComplianceCard analysis={analysis} findings={findings} />
 
       {/* Legal disclaimer */}
       <div className="flex items-center gap-2 rounded border border-slate-200 bg-slate-50 px-3 py-2 text-xs text-slate-600">
