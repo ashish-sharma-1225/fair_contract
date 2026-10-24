@@ -44,17 +44,15 @@ app = FastAPI(
 )
 
 # CORS configuration
-origins = settings.CORS_ORIGINS
-if isinstance(origins, str):
-    origins = [o.strip() for o in origins.split(",")]
-
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=origins if origins else ["*"],
+    allow_origins=["http://localhost:5173", "http://127.0.0.1:5173", "http://localhost:3000"],
+    allow_origin_regex=r"^https?://(localhost|127\.0\.0\.1)(:[0-9]+)?$",
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
 
 
 # Security: catch unhandled exceptions so secrets or raw stack traces are never leaked in responses
